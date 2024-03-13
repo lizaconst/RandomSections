@@ -1381,10 +1381,7 @@ def calculate_all_distributions(polyhedron, way, type_figure='parallelepiped', n
     
     #PATH = os.path.join(os.getcwd(), 'densities')
 
-    try:
-        os.mkdir('densities')
-    except:
-        pass
+    os.makedirs('densities', exist_ok=True)
 
     #углы
 
@@ -1527,10 +1524,7 @@ def calculate_all_distributions(polyhedron, way, type_figure='parallelepiped', n
             aspect = norm_dict(aspect_dict, step=0.01)
             sphericity = norm_dict(sphericity_dict, step=0.01)
 
-            try:
-                os.mkdir(path_)
-            except:
-                pass
+            os.makedirs(path_, exist_ok=True)
 
             # np.savetxt(path_ + r'\anlges_N=' + str(n) + '.txt', angles)
             # np.save(path_ + r'\areas_N=' + str(n) + '.npy', areas)
@@ -1678,10 +1672,7 @@ def calculate_all_distributions(polyhedron, way, type_figure='parallelepiped', n
             aspect = norm_dict(aspect_dict, step=0.01)
             sphericity = norm_dict(sphericity_dict, step=0.01)
 
-            try:
-                os.mkdir(path_)
-            except:
-                pass
+            os.makedirs(path_, exist_ok=True)
 
             np.savetxt(os.path.join(path_, f'anlges_N={n}.txt'), angles)
             np.save(os.path.join(path_, f'areas_N={n}.npy'), areas)
@@ -1813,10 +1804,7 @@ def calculate_all_distributions(polyhedron, way, type_figure='parallelepiped', n
             aspect = norm_dict(aspect_dict, step=0.01)
             sphericity = norm_dict(sphericity_dict, step=0.01)
 
-            try:
-                os.mkdir(path_)
-            except:
-                pass
+            os.makedirs(path_, exist_ok=True)
 
             np.savetxt(os.path.join(path_, f'anlges_N={n}.txt'), angles)
             np.save(os.path.join(path_, f'areas_N={n}.npy'), areas)
@@ -1834,7 +1822,7 @@ def calculate_all_distributions(polyhedron, way, type_figure='parallelepiped', n
     return angles, areas, perimeter, a_semi, b_semi, minferet, maxferet, aspect, sphericity
 
 
-def make_distributions(self, polyhedron, way, PATH, type_figure='parallelepiped', n=10000, params=None):
+def make_distributions(polyhedron, way, PATH, type_figure='parallelepiped', n=10000, params=None):
         '''
         генерирует n плоскостей способом way и возвращает плотность распределения
         геометрических характеристик сечений: углов, площадей, 
@@ -1952,9 +1940,6 @@ def make_distributions(self, polyhedron, way, PATH, type_figure='parallelepiped'
                             num_errors += 1
                     else:
                         num_errors += 1
-
-                    if i % (n//100) == 0:
-                        self.update_signal.emit(int((i + 1)/n*100))
                 
                 print('precision is ', 1-num_errors/n)
 
@@ -1969,10 +1954,7 @@ def make_distributions(self, polyhedron, way, PATH, type_figure='parallelepiped'
                 aspect = norm_dict(aspect_dict, step=0.01)
                 sphericity = norm_dict(sphericity_dict, step=0.01)
 
-                try:
-                    os.mkdir(path_)
-                except:
-                    pass
+                os.makedirs(path_, exist_ok=True)
 
                 np.savetxt(os.path.join(path_, f'anlges_N={n}.txt'), angles)
                 np.save(os.path.join(path_, f'areas_N={n}.npy'), areas)
@@ -2093,8 +2075,6 @@ def make_distributions(self, polyhedron, way, PATH, type_figure='parallelepiped'
                             num_errors += 1
                     else:
                         num_errors += 1
-                    if i % (n//100) == 0:
-                        self.update_signal.emit(int((i + 1)/n*100))
 
 
                 print('precision is ', 1-num_errors/n)
@@ -2110,10 +2090,7 @@ def make_distributions(self, polyhedron, way, PATH, type_figure='parallelepiped'
                 aspect = norm_dict(aspect_dict, step=0.01)
                 sphericity = norm_dict(sphericity_dict, step=0.01)
 
-                try:
-                    os.mkdir(path_)
-                except:
-                    pass
+                os.makedirs(path_, exist_ok=True)
 
                 np.savetxt(os.path.join(path_, f'anlges_N={n}.txt'), angles)
                 np.save(os.path.join(path_, f'areas_N={n}.npy'), areas)
@@ -2244,10 +2221,7 @@ def make_distributions(self, polyhedron, way, PATH, type_figure='parallelepiped'
                 aspect = norm_dict(aspect_dict, step=0.01)
                 sphericity = norm_dict(sphericity_dict, step=0.01)
 
-                try:
-                    os.mkdir(path_)
-                except:
-                    pass
+                os.makedirs(path_, exist_ok=True)
 
                 np.savetxt(os.path.join(path_, f'anlges_N={n}.txt'), angles)
                 np.save(os.path.join(path_, f'areas_N={n}.npy'), areas)

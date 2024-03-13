@@ -5,8 +5,8 @@ import math
 import os
 import pickle
 
-from geom import distance, intersection, parallel, angle, orthogonal, solve
-from geom import Point, Vector, Line, Plane
+from randsec.geom import distance, intersection, parallel, angle, orthogonal, solve
+from randsec.geom import Point, Vector, Line, Plane
 
 
 def area_of_triangle_3d(triangle):
@@ -1832,3 +1832,434 @@ def calculate_all_distributions(polyhedron, way, type_figure='parallelepiped', n
 
 
     return angles, areas, perimeter, a_semi, b_semi, minferet, maxferet, aspect, sphericity
+
+
+def make_distributions(self, polyhedron, way, PATH, type_figure='parallelepiped', n=10000, params=None):
+        '''
+        генерирует n плоскостей способом way и возвращает плотность распределения
+        геометрических характеристик сечений: углов, площадей, 
+        '''
+        #углы
+        angles = [0]*181
+
+        #ПАРАЛЛЕЛЕПИПЕД
+        if type_figure == 'parallelepiped':
+
+            if params:
+                a_side = params['side_a']
+                b_side = params['side_b']
+                c_side = params['side_c']
+            else:
+                a_side = 1.
+                b_side = 2.
+                c_side = 3.
+                params = {'side_a': 1.,
+                          'side_b': 2.,
+                          'side_c': 3.}
+
+            #path_ = PATH + r'\parallelepiped_a=' + str(a_side) + 'b=' + str(b_side) + 'c=' + str(c_side)
+            path_ = os.path.join(PATH, f"parallelepiped_a={a_side}b={b_side}c={c_side}")
+
+            try:
+                angles = np.loadtxt(os.path.join(path_, f'anlges_N={n}.txt'))
+                areas = np.load(os.path.join(path_, f'areas_N={n}.npy'), allow_pickle=True).item()
+                a_semi = np.load(os.path.join(path_, f'asemi_N={n}.npy'), allow_pickle=True).item()
+                b_semi = np.load(os.path.join(path_, f'bsemi_N={n}.npy'), allow_pickle=True).item()
+                perimeter = np.load(os.path.join(path_, f'perimeter_N={n}.npy'), allow_pickle=True).item()
+                minferet = np.load(os.path.join(path_, f'minferet_N={n}.npy'), allow_pickle=True).item()
+                maxferet = np.load(os.path.join(path_, f'maxferet_N={n}.npy'), allow_pickle=True).item()
+                aspect = np.load(os.path.join(path_, f'aspect_N={n}.npy'), allow_pickle=True).item()
+                sphericity = np.load(os.path.join(path_, f'sphericity_N={n}.npy'), allow_pickle=True).item()
+
+            except:
+                areas_dict = {} #пустой словать с ключами от 0.00 до a^2+b^2+c^2 #можно меньше
+                step = 0.01
+                current_key = 0.00
+                while current_key <= 10*(a_side**2 + b_side**2 + c_side**2):
+                    areas_dict.setdefault(round(current_key, 2), 0)
+                    current_key += step
+
+
+                perim_dict = {} #пустой словать с ключами от 0.00 до 6*max(a,b,c)
+                step = 0.01
+                current_key = 0.00
+                while current_key <= 20*max(a_side, b_side, c_side):
+                    perim_dict.setdefault(round(current_key, 2), 0)
+                    current_key += step
+
+                #max полуось <= max(a,b,c)
+                #semiaxes = np.zeros((10*round(max(a_side, b_side, c_side)*100)+1, 10*round(max(a_side, b_side, c_side)*100)+1))
+
+                a_semi_dict = {} #пустой словать с ключами от 0.00 до max(a,b,c) с шагом 0.01
+                b_semi_dict = {}
+                step = 0.01
+                current_key = 0.00
+                while current_key <= 10*max(a_side, b_side, c_side):
+                    a_semi_dict.setdefault(round(current_key, 2), 0)
+                    b_semi_dict.setdefault(round(current_key, 2), 0)
+                    current_key += step
+
+                minferet_dict = {} #пустой словать с ключами от 0.00 до max(a,b,c) с шагом 0.01
+                maxferet_dict = {}
+                aspect_dict = {}
+                sphericity_dict = {}
+
+                step = 0.01
+                current_key = 0.00
+                while current_key <= 3*a_side*b_side*c_side:
+                    minferet_dict.setdefault(round(current_key, 2), 0)
+                    maxferet_dict.setdefault(round(current_key, 2), 0)
+                    current_key += step
+                    
+                current_key = 0.00    
+                while current_key <= 1.:
+                    aspect_dict.setdefault(round(current_key, 2), 0)
+                    sphericity_dict.setdefault(round(current_key, 2), 0)
+                    current_key += step
+
+                num_errors = 0   
+
+
+                for i in range(n):
+                    sec_polygon = secant_polygon(polyhedron, way, params=params)
+                    if len(sec_polygon) > 2:
+                        polygonOxy = rotate_points_to_Oxy(sec_polygon)[0]
+                        #check convexity
+                        if is_convex_polygon_2D(polygonOxy):
+                            ang_sec = get_angles(sec_polygon)
+                            area = area_of_polygon_3d(sec_polygon)
+                            perim = perimeter_3D(sec_polygon)
+                            a_semi, b_semi = semiaxes_from_polygon_3D(sec_polygon)
+                            
+                            min_feret, max_feret = minmax_feret(polygonOxy)
+                            aspect_ratio = min_feret/max_feret
+                            sphericity = 2*(np.pi*area)**0.5/perim
+                            if aspect_ratio <= 1.:
+                                for ang in ang_sec:
+                                    angles[ang] += 1
+                                areas_dict[round(area, 2)] += 1
+                                perim_dict[round(perim, 2)] += 1
+                                a_semi_dict[round(a_semi, 2)] += 1
+                                b_semi_dict[round(b_semi, 2)] += 1
+                                
+                                minferet_dict[round(min_feret, 2)] += 1
+                                maxferet_dict[round(max_feret, 2)] += 1
+                                aspect_dict[round(aspect_ratio, 2)] += 1
+                                sphericity_dict[round(sphericity, 2)] += 1
+                            else:
+                                num_errors += 1
+                        else:
+                            num_errors += 1
+                    else:
+                        num_errors += 1
+
+                    if i % (n//100) == 0:
+                        self.update_signal.emit(int((i + 1)/n*100))
+                
+                print('precision is ', 1-num_errors/n)
+
+                angles = np.array(list(np.array(angles)/np.sum(angles)))
+                areas = norm_dict(areas_dict, step=0.01)
+                perimeter = norm_dict(perim_dict, step=0.01)
+                a_semi = norm_dict(a_semi_dict, step=0.01)
+                b_semi = norm_dict(b_semi_dict, step=0.01)
+
+                minferet = norm_dict(minferet_dict, step=0.01)
+                maxferet = norm_dict(maxferet_dict, step=0.01)
+                aspect = norm_dict(aspect_dict, step=0.01)
+                sphericity = norm_dict(sphericity_dict, step=0.01)
+
+                try:
+                    os.mkdir(path_)
+                except:
+                    pass
+
+                np.savetxt(os.path.join(path_, f'anlges_N={n}.txt'), angles)
+                np.save(os.path.join(path_, f'areas_N={n}.npy'), areas)
+                np.save(os.path.join(path_, f'perimeter_N={n}.npy'), perimeter)
+                np.save(os.path.join(path_, f'asemi_N={n}.npy'), a_semi)
+                np.save(os.path.join(path_, f'bsemi_N={n}.npy'), b_semi)
+                #np.save(os.path.join(path_, f'semiaxes_N={n}.npy'), semiaxes)
+
+                np.save(os.path.join(path_, f'minferet_N={n}.npy'), minferet)
+                np.save(os.path.join(path_, f'maxferet_N={n}.npy'), maxferet)
+                np.save(os.path.join(path_, f'aspect_N={n}.npy'), aspect)
+                np.save(os.path.join(path_, f'sphericity_N={n}.npy'), sphericity)
+
+
+
+        if type_figure == 'triangular prism':
+            #[0.00, 0.01, 0.02, ..., 1.40, 1.41, 1.42]#
+            #[0, 1, 2, ..., 140, 141, 142]
+
+            if params:
+                side = params['side']
+            else:
+                side = 1.
+                params = {'side': 1.}
+
+            path_ = os.path.join(PATH, f"tri-prism_side={side}")
+
+            try:
+                angles = np.loadtxt(os.path.join(path_, f'anlges_N={n}.txt'))
+                areas = np.load(os.path.join(path_, f'areas_N={n}.npy'), allow_pickle=True).item()
+                a_semi = np.load(os.path.join(path_, f'asemi_N={n}.npy'), allow_pickle=True).item()
+                b_semi = np.load(os.path.join(path_, f'bsemi_N={n}.npy'), allow_pickle=True).item()
+                perimeter = np.load(os.path.join(path_, f'perimeter_N={n}.npy'), allow_pickle=True).item()
+                minferet = np.load(os.path.join(path_, f'minferet_N={n}.npy'), allow_pickle=True).item()
+                maxferet = np.load(os.path.join(path_, f'maxferet_N={n}.npy'), allow_pickle=True).item()
+                aspect = np.load(os.path.join(path_, f'aspect_N={n}.npy'), allow_pickle=True).item()
+                sphericity = np.load(os.path.join(path_, f'sphericity_N={n}.npy'), allow_pickle=True).item()
+
+            except:
+                areas = [0]*143
+
+                areas_dict = {} #пустой словать с ключами от 0.00 до 1.42 с шагом 0.01
+                step = 0.01
+                current_key = 0.00
+                while current_key <= 3**0.5*side*side:
+                    areas_dict.setdefault(round(current_key, 2), 0)
+                    current_key += step
+
+
+                perim_dict = {} #пустой словать с ключами от 0.00 до 10.00 с шагом 0.01
+                step = 0.01
+                current_key = 0.00
+                while current_key <= 4*side*2:
+                    perim_dict.setdefault(round(current_key, 2), 0)
+                    current_key += step
+
+                #semiaxes = np.zeros((round(2*side*100), round(2*side*100)), dtype=int)
+
+                a_semi_dict = {} #пустой словать с ключами от 0.00 до 3.00 с шагом 0.01
+                b_semi_dict = {}
+                step = 0.01
+                current_key = 0.00
+                while current_key <= 2*side:
+                    a_semi_dict.setdefault(round(current_key, 2), 0)
+                    b_semi_dict.setdefault(round(current_key, 2), 0)
+                    current_key += step
+
+                minferet_dict = {} #пустой словать с ключами от 0.00 до max(a,b,c) с шагом 0.01
+                maxferet_dict = {}
+                aspect_dict = {}
+                sphericity_dict = {}
+
+                step = 0.01
+                current_key = 0.00
+                while current_key <= 5*side:
+                    minferet_dict.setdefault(round(current_key, 2), 0)
+                    maxferet_dict.setdefault(round(current_key, 2), 0)
+                    current_key += step
+                    
+                current_key = 0.00    
+                while current_key <= 1.:
+                    aspect_dict.setdefault(round(current_key, 2), 0)
+                    sphericity_dict.setdefault(round(current_key, 2), 0)
+                    current_key += step
+
+                num_errors = 0   
+
+
+                for i in range(n):
+                    sec_polygon = secant_polygon(polyhedron, way, params=params)
+                    if len(sec_polygon) > 2:
+                        polygonOxy = rotate_points_to_Oxy(sec_polygon)[0]
+                        #check convexity
+                        if is_convex_polygon_2D(polygonOxy):
+                            ang_sec = get_angles(sec_polygon)
+                            area = area_of_polygon_3d(sec_polygon)
+                            perim = perimeter_3D(sec_polygon)
+                            a_semi, b_semi = semiaxes_from_polygon_3D(sec_polygon)
+                            
+                            min_feret, max_feret = minmax_feret(polygonOxy)
+                            aspect_ratio = min_feret/max_feret
+                            sphericity = 2*(np.pi*area)**0.5/perim
+                            if aspect_ratio <= 1.:
+                                for ang in ang_sec:
+                                    angles[ang] += 1
+                                areas_dict[round(area, 2)] += 1
+                                perim_dict[round(perim, 2)] += 1
+                                a_semi_dict[round(a_semi, 2)] += 1
+                                b_semi_dict[round(b_semi, 2)] += 1
+                                
+                                minferet_dict[round(min_feret, 2)] += 1
+                                maxferet_dict[round(max_feret, 2)] += 1
+                                aspect_dict[round(aspect_ratio, 2)] += 1
+                                sphericity_dict[round(sphericity, 2)] += 1
+                            else:
+                                num_errors += 1
+                        else:
+                            num_errors += 1
+                    else:
+                        num_errors += 1
+                    if i % (n//100) == 0:
+                        self.update_signal.emit(int((i + 1)/n*100))
+
+
+                print('precision is ', 1-num_errors/n)
+
+                angles = np.array(list(np.array(angles)/np.sum(angles)))
+                areas = norm_dict(areas_dict, step=0.01)
+                perimeter = norm_dict(perim_dict, step=0.01)
+                a_semi = norm_dict(a_semi_dict, step=0.01)
+                b_semi = norm_dict(b_semi_dict, step=0.01)
+
+                minferet = norm_dict(minferet_dict, step=0.01)
+                maxferet = norm_dict(maxferet_dict, step=0.01)
+                aspect = norm_dict(aspect_dict, step=0.01)
+                sphericity = norm_dict(sphericity_dict, step=0.01)
+
+                try:
+                    os.mkdir(path_)
+                except:
+                    pass
+
+                np.savetxt(os.path.join(path_, f'anlges_N={n}.txt'), angles)
+                np.save(os.path.join(path_, f'areas_N={n}.npy'), areas)
+                np.save(os.path.join(path_, f'perimeter_N={n}.npy'), perimeter)
+                np.save(os.path.join(path_, f'asemi_N={n}.npy'), a_semi)
+                np.save(os.path.join(path_, f'bsemi_N={n}.npy'), b_semi)
+                #np.save(os.path.join(path_, f'semiaxes_N={n}.npy'), semiaxes)
+
+                np.save(os.path.join(path_, f'minferet_N={n}.npy'), minferet)
+                np.save(os.path.join(path_, f'maxferet_N={n}.npy'), maxferet)
+                np.save(os.path.join(path_, f'aspect_N={n}.npy'), aspect)
+                np.save(os.path.join(path_, f'sphericity_N={n}.npy'), sphericity)
+
+
+
+        if type_figure == 'hex prism':
+
+            r = params['r']
+            k = params['k']
+
+            path_ = os.path.join(PATH, f"hex-prism_r={r}k={k}")
+
+            try:
+                angles = np.loadtxt(os.path.join(path_, f'anlges_N={n}.txt'))
+                areas = np.load(os.path.join(path_, f'areas_N={n}.npy'), allow_pickle=True).item()
+                a_semi = np.load(os.path.join(path_, f'asemi_N={n}.npy'), allow_pickle=True).item()
+                b_semi = np.load(os.path.join(path_, f'bsemi_N={n}.npy'), allow_pickle=True).item()
+                perimeter = np.load(os.path.join(path_, f'perimeter_N={n}.npy'), allow_pickle=True).item()
+                minferet = np.load(os.path.join(path_, f'minferet_N={n}.npy'), allow_pickle=True).item()
+                maxferet = np.load(os.path.join(path_, f'maxferet_N={n}.npy'), allow_pickle=True).item()
+                aspect = np.load(os.path.join(path_, f'aspect_N={n}.npy'), allow_pickle=True).item()
+                sphericity = np.load(os.path.join(path_, f'sphericity_N={n}.npy'), allow_pickle=True).item()
+
+            except:
+                angles = [0]*181
+
+                areas_dict = {} #пустой словать с ключами от 0.00 до 1.42 с шагом 0.01
+                step = 0.01
+                current_key = 0.00
+                while current_key <= 10.:
+                    areas_dict.setdefault(round(current_key, 2), 0)
+                    current_key += step
+
+
+                perim_dict = {} #пустой словать с ключами от 0.00 до 10.00 с шагом 0.01
+                step = 0.01
+                current_key = 0.00
+                while current_key <= 10.:
+                    perim_dict.setdefault(round(current_key, 2), 0)
+                    current_key += step
+
+                #semiaxes = np.zeros((round(k*2*60)+20, round(k*2*60)+20), dtype=int)
+
+                a_semi_dict = {} #пустой словать с ключами от 0.00 до 3.00 с шагом 0.01
+                b_semi_dict = {}
+                step = 0.01
+                current_key = 0.00
+                while current_key <= round(k*2*60)+20:
+                    a_semi_dict.setdefault(round(current_key, 2), 0)
+                    b_semi_dict.setdefault(round(current_key, 2), 0)
+                    current_key += step
+
+                minferet_dict = {} #пустой словать с ключами от 0.00 до max(a,b,c) с шагом 0.01
+                maxferet_dict = {}
+                aspect_dict = {}
+                sphericity_dict = {}
+
+                step = 0.01
+                current_key = 0.00
+                while current_key <= round(k*2*60) + 20.:
+                    minferet_dict.setdefault(round(current_key, 2), 0)
+                    maxferet_dict.setdefault(round(current_key, 2), 0)
+                    current_key += step
+                    
+                current_key = 0.00    
+                while current_key <= 1.:
+                    aspect_dict.setdefault(round(current_key, 2), 0)
+                    sphericity_dict.setdefault(round(current_key, 2), 0)
+                    current_key += step
+
+                num_errors = 0   
+
+
+                for i in range(n):
+                    sec_polygon = secant_polygon(polyhedron, way, params=params)
+                    if len(sec_polygon) > 2:
+                        polygonOxy = rotate_points_to_Oxy(sec_polygon)[0]
+                        #check convexity
+                        if is_convex_polygon_2D(polygonOxy):
+                            ang_sec = get_angles(sec_polygon)
+                            area = area_of_polygon_3d(sec_polygon)
+                            perim = perimeter_3D(sec_polygon)
+                            a_semi, b_semi = semiaxes_from_polygon_3D(sec_polygon)
+                            
+                            min_feret, max_feret = minmax_feret(polygonOxy)
+                            aspect_ratio = min_feret/max_feret
+                            sphericity = 2*(np.pi*area)**0.5/perim
+                            if aspect_ratio <= 1.:
+                                for ang in ang_sec:
+                                    angles[ang] += 1
+                                areas_dict[round(area, 2)] += 1
+                                perim_dict[round(perim, 2)] += 1
+                                a_semi_dict[round(a_semi, 2)] += 1
+                                b_semi_dict[round(b_semi, 2)] += 1
+                                
+                                minferet_dict[round(min_feret, 2)] += 1
+                                maxferet_dict[round(max_feret, 2)] += 1
+                                aspect_dict[round(aspect_ratio, 2)] += 1
+                                sphericity_dict[round(sphericity, 2)] += 1
+                            else:
+                                num_errors += 1
+                        else:
+                            num_errors += 1
+                    else:
+                        num_errors += 1
+
+
+                print('precision is ', 1-num_errors/n)
+
+                angles = np.array(list(np.array(angles)/np.sum(angles)))
+                areas = norm_dict(areas_dict, step=0.01)
+                perimeter = norm_dict(perim_dict, step=0.01)
+                a_semi = norm_dict(a_semi_dict, step=0.01)
+                b_semi = norm_dict(b_semi_dict, step=0.01)
+
+                minferet = norm_dict(minferet_dict, step=0.01)
+                maxferet = norm_dict(maxferet_dict, step=0.01)
+                aspect = norm_dict(aspect_dict, step=0.01)
+                sphericity = norm_dict(sphericity_dict, step=0.01)
+
+                try:
+                    os.mkdir(path_)
+                except:
+                    pass
+
+                np.savetxt(os.path.join(path_, f'anlges_N={n}.txt'), angles)
+                np.save(os.path.join(path_, f'areas_N={n}.npy'), areas)
+                np.save(os.path.join(path_, f'perimeter_N={n}.npy'), perimeter)
+                np.save(os.path.join(path_, f'asemi_N={n}.npy'), a_semi)
+                np.save(os.path.join(path_, f'bsemi_N={n}.npy'), b_semi)
+                #np.save(os.path.join(path_, f'semiaxes_N={n}.npy'), semiaxes)
+
+                np.save(os.path.join(path_, f'minferet_N={n}.npy'), minferet)
+                np.save(os.path.join(path_, f'maxferet_N={n}.npy'), maxferet)
+                np.save(os.path.join(path_, f'aspect_N={n}.npy'), aspect)
+                np.save(os.path.join(path_, f'sphericity_N={n}.npy'), sphericity)
+
+
+        return angles, areas, perimeter, a_semi, b_semi, minferet, maxferet, aspect, sphericity

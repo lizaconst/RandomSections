@@ -12,13 +12,18 @@ from .geom import Point, Vector, Line, Plane
 
 def area_of_triangle_3d(triangle):
     """
-    Функция для вычисления площади треугольника в трехмерном пространстве по координатам его вершин.
+    Calculate the area of a triangle in 3D space given the coordinates of its vertices.
 
-    Аргументы:
-    v1, v2, v3 -- Point or np.darray, содержащие координаты вершин треугольника в трехмерном пространстве.
+    Args:
+        triangle (list or tuple of lists/tuples): A list or tuple containing three points, each of which is a list or tuple 
+        representing the coordinates of a vertex of the triangle in 3D space.
 
-    Возвращает:
-    Площадь треугольника.
+    Returns:
+        float: The area of the triangle.
+
+    Notes:
+        If any of the vertices is an instance of the `Line` class, the function returns a default value of 100000.
+
     """
     v1 = triangle[0]
     v2 = triangle[1]
@@ -26,42 +31,47 @@ def area_of_triangle_3d(triangle):
     if (isinstance(v1, Line) or isinstance(v2, Line) or isinstance(v3, Line)):
         return 100000
     
-    # Вычисляем векторы, соединяющие вершины треугольника.
+    # Calculate vectors connecting the vertices of the triangle.
     a = (v2[0] - v1[0], v2[1] - v1[1], v2[2] - v1[2])
     b = (v3[0] - v1[0], v3[1] - v1[1], v3[2] - v1[2])
-    # Вычисляем векторное произведение векторов a и b.
+    # Compute the cross product of vectors a and b.
     cross_product = (a[1] * b[2] - a[2] * b[1], a[2] * b[0] - a[0] * b[2], a[0] * b[1] - a[1] * b[0])
-    # Вычисляем длину вектора cross_product.
+    # Calculate the length of the cross product vector.
     length = (cross_product[0] ** 2 + cross_product[1] ** 2 + cross_product[2] ** 2)**0.5
-    # Вычисляем площадь треугольника.
     area = length / 2
     return area
 
+
 def area_of_polygon_3d(polygon):
-    '''
-    get area of polygon
-    
-    polygon: np.array of coordinates of points of polygon
-    
-    return: area of polygon
-    '''
-    #make triangulation
+    """
+    Calculate the area of a polygon in 3D space given the coordinates of its vertices.
+
+    Args:
+        polygon (np.array): An array of coordinates representing the vertices of the polygon in 3D space.
+
+    Returns:
+        float: The area of the polygon.
+
+    """
+    # Make triangulation
     triangles = from_polygon_to_list_of_triangles(polygon)
-    S = 0.
-    #for every triangle add area of polygon
+    S = 0.0
+    # For every triangle, add the area to the total polygon area
     for triangle in triangles:
         S += area_of_triangle_3d(triangle)
     return S
 
 
 def from_polygon_to_list_of_triangles(vectors):
-    '''
-    make triangulation of polygon
-    
-    vectors: np.array of coordinates of points of polygon
-    
-    return np.array of triangles
-    '''
+    """
+    Make triangulation of a polygon.
+
+    Args:
+        vectors (np.array): An array of coordinates representing the vertices of the polygon in 3D space.
+
+    Returns:
+        np.array: An array of triangles, where each triangle is represented by the coordinates of its three vertices.
+    """
     n = len(vectors)
     fp = vectors[0]
     triangles = []
@@ -71,8 +81,52 @@ def from_polygon_to_list_of_triangles(vectors):
     return np.array(triangles)
 
 
+def from_list_points_to_array(points):
+    """
+    Transform a list of Points to an array of 3D coordinates.
+
+    Args:
+        points (list): A list of Points, where each Point has 3D coordinates (x, y, z).
+
+    Returns:
+        np.array: An array of shape (n, 3) containing the 3D coordinates of the points.
+    """
+    vecs = np.zeros((len(points), 3))
+    for i in range(len(points)):
+        vecs[i] = points[i][0], points[i][1], points[i][2]
+    return vecs
+
+
+def from_list_array_to_points(points_arr):
+    """
+    Transform an array of 3D coordinates to a list of Points.
+
+    Args:
+        points_arr (np.array): An array of shape (n, 3) containing the 3D coordinates of the points.
+
+    Returns:
+        list: A list of Points, where each Point has 3D coordinates (x, y, z).
+    """
+    points = []
+    for i in range(len(points_arr)):
+        points.append(Point(points_arr[i][0], points_arr[i][1], points_arr[i][2]))
+    return points
+
+
 def get_angles(points):
-    # вычисление углов полигона
+    """
+    Calculate the angles of a convex polygon at each vertex.
+
+    Args:
+        points (list or np.array or list (np.array) of points): A list or array of coordinates representing the vertices of the polygon in 3D space.
+
+    Returns:
+        np.array: An array of angles (in degrees) at each vertex of the polygon.
+
+    """
+    if isinstance(points[0], list) or isinstance(points[0], np.ndarray):
+        points = from_list_array_to_points(points)
+
     cnt = points
     num_points = len(cnt)
     angles = []
@@ -84,53 +138,66 @@ def get_angles(points):
 
     return np.array(angles)
 
-right_triangle = [Point(0, 0, 0), Point(1, 0, 0), Point(0.5, 3**0.5/2, 0)]
 
-def is_point_in_triangle(point, polygon=right_triangle):
-    '''
-    Проверка находится ли точка в треугольнике в 3D
-    '''
-    #проверка находится ли точка внутри треугольника
-    #проверяем равенство площадей
-    S = area_of_triangle_3d(polygon)
-    pA = polygon[0]
-    pB = polygon[1]
-    pC = polygon[2]
+
+def is_point_in_triangle(point, triangle):
+    """
+    Check if a point is inside a triangle in 3D space.
+
+    Args:
+        point (list or np.array): The coordinates of the point to be checked.
+        triangle (list or np.array): An array of coordinates representing the vertices of the triangle in 3D space.
+
+    Returns:
+        bool: True if the point is inside the triangle, False otherwise.
+    """
+
+    S = area_of_triangle_3d(triangle)
+    pA = triangle[0]
+    pB = triangle[1]
+    pC = triangle[2]
     S1 = area_of_triangle_3d([pA, pB, point])
     S2 = area_of_triangle_3d([pA, pC, point])
     S3 = area_of_triangle_3d([pC, pB, point])
+    # Check if the sum of the sub-triangle areas is equal to the original triangle area
     if abs(S-S1-S2-S3) < 0.0001:
         return True
     else:
         return False
     
-    
-
-
-def area2(i, j, k, poly):
-    x1, y1 = poly[i][0], poly[i][1]
-    x2, y2 = poly[j][0], poly[j][1]
-    x3, y3 = poly[k][0], poly[k][1]
-    
-    area = 0.5 * abs((x1*(y2-y3) + x2*(y3-y1) + x3*(y1-y2)))
-    return area
-
-
-def dist2(i, j, poly):
-    x1, y1 = poly[i][0], poly[i][1]
-    x2, y2 = poly[j][0], poly[j][1]
-    
-    return ((x1-x2)**2 + (y1-y2)**2)**0.5
-
-
-def next_point(p, poly):
-    return (p + 1) % len(poly)
-
 
 def antipodal_pairs(poly):
-    '''
-    assumed that poly is 2D convex
-    '''
+    """
+    Find antipodal pairs in a 2D convex polygon.
+
+    Args:
+        poly (np.array): A 2D array representing the vertices of the convex polygon.
+
+    Returns:
+        tuple: Two numpy arrays:
+            - An array of pairs of points representing the antipodal pairs.
+            - An array of pairs of indices corresponding to the antipodal pairs.
+    """
+
+    def area2(i, j, k, poly):
+        x1, y1 = poly[i][0], poly[i][1]
+        x2, y2 = poly[j][0], poly[j][1]
+        x3, y3 = poly[k][0], poly[k][1]
+        
+        area = 0.5 * abs((x1*(y2-y3) + x2*(y3-y1) + x3*(y1-y2)))
+        return area
+
+
+    def dist2(i, j, poly):
+        x1, y1 = poly[i][0], poly[i][1]
+        x2, y2 = poly[j][0], poly[j][1]
+        
+        return ((x1-x2)**2 + (y1-y2)**2)**0.5
+
+
+    def next_point(p, poly):
+        return (p + 1) % len(poly)
+
     ret = []
     ret_ix = []
     p = len(poly) - 1
@@ -181,6 +248,19 @@ def antipodal_pairs(poly):
     
     
 def from_rk_to_abwt(r, k, m=1):
+    """
+    Convert parameters r and k of a truncated prism to parameters a, b, w, and t of a truncated prism.
+    Parameter m is a scale parameter. By default, a + 2b = 1.
+
+    Args:
+        r (float): Parameter r of the truncated prism.
+        k (float): Parameter k of the truncated prism.
+        m (float, optional): Scale parameter. Defaults to 1.
+
+    Returns:
+        tuple: A tuple containing parameters a, b, w, and t of the truncated prism.
+
+    """
     b = m/(2*r+1)
     a = r*b
     w = 3**0.5/2*(m-a)
@@ -189,46 +269,62 @@ def from_rk_to_abwt(r, k, m=1):
 
 
 def extract_and_trim_dict(dictionary):
+    """
+    Trim a dictionary to remove trailing zeros and extract keys and values.
+
+    Args:
+        dictionary (dict): The dictionary to be trimmed.
+
+    Returns:
+        tuple: A tuple containing two lists, one with keys and the other with corresponding values after trimming.
+    """
     keys = []
     values = []
     for key, value in dictionary.items():
         keys.append(key)
         values.append(value)
 
-    # Обрезаем конец списков, пока последний элемент не равен 0.0
     while values and values[-1] == 0.0:
         del keys[-1]
         del values[-1]
     return keys, values
 
 
-
-#для шара
-
 def make_random_plane_into_sphere(r=0.866, center=Point(0.5, 0.5, 0.5)):
-    '''
-    генерирует плоскость внутри шара равномерно в пространстве
-    r - радиус шара
-    center - центр шара
-    '''
-    #генерируем плоскость по вектору нормали и свигу вдоль этой нормали
+    """
+    Generate a plane inside a sphere uniformly in space.
+
+    Args:
+        r (float, optional): Radius of the sphere. Defaults to 0.866.
+        center (Point, optional): Center of the sphere. Defaults to Point(0.5, 0.5, 0.5).
+
+    Returns:
+        Plane: A plane generated inside the sphere.
+
+    """
+    # Generate a plane along the normal vector and shift it along this normal vector
     fi = 2*np.pi*uniform(0, 1)
     teta = np.arccos(2*uniform(0, 1) - 1)
     n = Vector(r*np.sin(teta)*np.cos(fi), 
                r*np.sin(teta)*np.sin(fi),
                r*np.cos(teta))
-    alpha = uniform(-1, 1) #сдвиг
+    alpha = uniform(-1, 1) #shift
     point = Point(alpha*n[0]+center[0], alpha*n[1]+center[1], alpha*n[2]+center[2])
     return Plane(point, n)
 
 
 def make_random_plane_into_cube(side=1, center=Point(0.5, 0.5, 0.5)):
-    '''
-    генерирует плоскость внутри куба равномерно в пространстве
-    side - сторона куба
-    center - центр куба
-    '''
-    #генерируем плоскость по вектору нормали и свигу вдоль этой нормали
+    """
+    Generate a plane inside a cube uniformly in space.
+
+    Args:
+        side (float, optional): Side length of the cube. Defaults to 1.
+        center (Point, optional): Center of the cube. Defaults to Point(0.5, 0.5, 0.5).
+
+    Returns:
+        Plane: A plane generated inside the cube.
+    """
+    # Generate a plane along the normal vector and shift it along this normal vector
     fi = 2*np.pi*uniform(0, 1)
     teta = np.arccos(2*uniform(0, 1) - 1)
     n = Vector(np.sin(teta)*np.cos(fi), 
@@ -239,53 +335,53 @@ def make_random_plane_into_cube(side=1, center=Point(0.5, 0.5, 0.5)):
     
     dist_max = 0
     for M in cube.iterable_points:
-        #хочу найти проекцию всех точек куба на сгенерированную прямую
-        #эта прямая
-        a = Line(center, n) #через точку и вектор
-        #проводим через точку M плоскость, перпендикулярную этой прямой
-        pl = Plane(M, n) #через точку и вектор нормали
-        L = pl.intersection(a) #искомая точка - пересечение плоскости и сгенерированной прямой
+        # Find the projection of all points of the cube onto the generated line
+        a = Line(center, n) # by point and vector
+        #plane through M, perpendicular to the line n
+        pl = Plane(M, n) #plane by point and normal vector
+        L = pl.intersection(a) # intersection of plane and generated line
         dist = distance(center, L)
         if dist > dist_max:
             dist_max = dist
             
-    #alpha - сдвиг, его будем подбирать в зависимости от сгенерированной прямой
+    # Choose the shift alpha depending on the generated line
     alpha = uniform(-dist_max, dist_max)
     point = Point(alpha*n[0]+center[0], alpha*n[1]+center[1], alpha*n[2]+center[2])
     return Plane(point, n)
-    # проверка показала, что при такой генерации мы действительно обязательно пересекаем куб!!
-    # и что если чуть-чуть пошевелим, то уже не обязательно пересекаем куб
+
     
 def make_random_plane_into_prism(side=1):
-    '''
-    генерирует плоскость внутри усечённой призмы равномерно в пространстве
-    '''
-    #генерируем плоскость по вектору нормали и свигу вдоль этой нормали
+    """
+    Generate a plane inside a truncated prism uniformly in space.
 
-    center = Point(0.5, np.sqrt(3)/6, side/2)
-    fi = 2*np.pi*uniform(0, 1)
-    teta = np.arccos(2*uniform(0, 1) - 1)
-    n = Vector(np.sin(teta)*np.cos(fi), 
-               np.sin(teta)*np.sin(fi),
+    Args:
+        side (float, optional): Side length of the truncated prism. Defaults to 1.
+
+    Returns:
+        Plane: A plane generated inside the truncated prism.
+    """
+    # Generate a plane along the normal vector and shift it along this normal vector
+    center = Point(0.5, np.sqrt(3) / 6, side / 2)
+    fi = 2 * np.pi * uniform(0, 1)
+    teta = np.arccos(2 * uniform(0, 1) - 1)
+    n = Vector(np.sin(teta) * np.cos(fi), 
+               np.sin(teta) * np.sin(fi),
                np.cos(teta))
 
     prism = RegularTriangularPrism(side=side)
     
     arr_projs =[]
     for M in prism.iterable_points:
-        #хочу найти проекцию всех вершин призмы на сгенерированную прямую
-        #эта прямая
-        a = Line(center, n) #через точку и вектор
-        #проводим через точку M плоскость, перпендикулярную этой прямой
-        pl = Plane(M, n) #через точку и вектор нормали
-        L = pl.intersection(a) #искомая точка - пересечение плоскости и сгенерированной прямой
+        # Find the projection of all vertices of the prism onto the generated line
+        a = Line(center, n)
+        pl = Plane(M, n)
+        L = pl.intersection(a)
         arr_projs.append(L)
 
     dist_max = 0
     M_r = center
     M_l = center
-    #среди всех попарных точек найдем те, между которыми расстояние максимальное
-    # это нужно, потому что такая призма не симметричная
+    # Find the pair of points with maximum distance between them
     for M1 in arr_projs:
         for M2 in arr_projs:
             dist = distance(M1, M2)
@@ -296,46 +392,53 @@ def make_random_plane_into_prism(side=1):
             
     d_min = distance(M_l, center)
     d_max = distance(M_r, center)
-    #меняем направление вектора нормали, чтобы он смотрел о M_l до M_r
-    n = Vector((M_r[0]-M_l[0])/distance(M_r, M_l), (M_r[1]-M_l[1])/distance(M_r, M_l), (M_r[2]-M_l[2])/distance(M_r, M_l))
+    # Change the direction of the normal vector so that it points from M_l to M_r
+    n = Vector((M_r[0] - M_l[0]) / distance(M_r, M_l), 
+               (M_r[1] - M_l[1]) / distance(M_r, M_l), 
+               (M_r[2] - M_l[2]) / distance(M_r, M_l))
     
-    #alpha - сдвиг, его будем подбирать в зависимости от сгенерированной прямой нормали
+    # Choose alpha depending on the generated normal line
     alpha = uniform(-d_min, d_max)
-    point = Point(alpha*n[0]+center[0], alpha*n[1]+center[1], alpha*n[2]+center[2])
+    point = Point(alpha * n[0] + center[0], 
+                  alpha * n[1] + center[1], 
+                  alpha * n[2] + center[2])
     return Plane(point, n)
-    #проверено, все ок
 
 
 def make_random_plane_into_tetra(side_a=1, side_b=2, side_c=3):
-    '''
-    генерирует плоскость внутри усечённой призмы равномерно в пространстве
-    '''
-    #генерируем плоскость по вектору нормали и свигу вдоль этой нормали
+    """
+    Generate a plane inside a parallelepiped uniformly in space.
 
-    center = Point(0.5, np.sqrt(3)/6, 1/2)
-    fi = 2*np.pi*uniform(0, 1)
-    teta = np.arccos(2*uniform(0, 1) - 1)
-    n = Vector(np.sin(teta)*np.cos(fi), 
-               np.sin(teta)*np.sin(fi),
+    Args:
+        side_a (float, optional): Length of side 'a' of the parallelepiped. Defaults to 1.
+        side_b (float, optional): Length of side 'b' of the parallelepiped. Defaults to 2.
+        side_c (float, optional): Length of side 'c' of the parallelepiped. Defaults to 3.
+
+    Returns:
+        Plane: A plane generated inside the parallelepiped.
+    """
+    # Generate a plane along the normal vector and shift it along this normal vector
+    center = Point(0.5, np.sqrt(3) / 6, 1 / 2)
+    fi = 2 * np.pi * uniform(0, 1)
+    teta = np.arccos(2 * uniform(0, 1) - 1)
+    n = Vector(np.sin(teta) * np.cos(fi), 
+               np.sin(teta) * np.sin(fi),
                np.cos(teta))
 
     prism = Parallelepiped(side_a=side_a, side_b=side_b, side_c=side_c)
     
     arr_projs =[]
     for M in prism.iterable_points:
-        #хочу найти проекцию всех вершин призмы на сгенерированную прямую
-        #эта прямая
-        a = Line(center, n) #через точку и вектор
-        #проводим через точку M плоскость, перпендикулярную этой прямой
-        pl = Plane(M, n) #через точку и вектор нормали
-        L = pl.intersection(a) #искомая точка - пересечение плоскости и сгенерированной прямой
+        # Find the projection of all vertices of the prism onto the generated line
+        a = Line(center, n)
+        pl = Plane(M, n)
+        L = pl.intersection(a)
         arr_projs.append(L)
 
     dist_max = 0
     M_r = center
     M_l = center
-    #среди всех попарных точек найдем те, между которыми расстояние максимальное
-    # это нужно, потому что такая призма не симметричная
+    # Find the pair of points with maximum distance between them
     for M1 in arr_projs:
         for M2 in arr_projs:
             dist = distance(M1, M2)
@@ -346,14 +449,17 @@ def make_random_plane_into_tetra(side_a=1, side_b=2, side_c=3):
             
     d_min = distance(M_l, center)
     d_max = distance(M_r, center)
-    #меняем направление вектора нормали, чтобы он смотрел о M_l до M_r
-    n = Vector((M_r[0]-M_l[0])/distance(M_r, M_l), (M_r[1]-M_l[1])/distance(M_r, M_l), (M_r[2]-M_l[2])/distance(M_r, M_l))
+    # Change the direction of the normal vector so that it points from M_l to M_r
+    n = Vector((M_r[0] - M_l[0]) / distance(M_r, M_l), 
+               (M_r[1] - M_l[1]) / distance(M_r, M_l), 
+               (M_r[2] - M_l[2]) / distance(M_r, M_l))
     
-    #alpha - сдвиг, его будем подбирать в зависимости от сгенерированной прямой нормали
+    # Choose alpha depending on the generated normal line
     alpha = uniform(-d_min, d_max)
-    point = Point(alpha*n[0]+center[0], alpha*n[1]+center[1], alpha*n[2]+center[2])
+    point = Point(alpha * n[0] + center[0], 
+                  alpha * n[1] + center[1], 
+                  alpha * n[2] + center[2])
     return Plane(point, n)
-    #проверено, все ок
 
     
 def make_random_plane_into_wcco(r, k, m=1):
@@ -405,110 +511,159 @@ def make_random_plane_into_wcco(r, k, m=1):
     return Plane(point, n)
     
 
+#Angles distributions
+# def generate_random_plane_angles(polyhedron, way):
+#     '''
+#     генерирует плоскость внутри многогранника polyhedron способом way
+#     и возвращает список углов секущего многогранника
+#     рекомендуется выбирать way, полностью замощающий polyhedron
+#     в polyhedron должен быть реализован метод intersection_with_plane
+#     '''
+#     plane = way()
+#     # отбираем только те плоскости у которых непустое пересечение с многогранником
+#     points_intersection = polyhedron.intersection_with_plane(plane)
+#     if len(points_intersection) != 0:
+#         return get_angles(points_intersection)
+#     else:
+#         return []
 
-def generate_random_plane_angles(polyhedron, way):
-    '''
-    генерирует плоскость внутри многогранника polyhedron способом way
-    и возвращает список углов секущего многогранника
-    рекомендуется выбирать way, полностью замощающий polyhedron
-    в polyhedron должен быть реализован метод intersection_with_plane
-    '''
-    plane = way()
-    # отбираем только те плоскости у которых непустое пересечение с многогранником
-    points_intersection = polyhedron.intersection_with_plane(plane)
-    if len(points_intersection) != 0:
-        return get_angles(points_intersection)
-    else:
-        return []
 
-
-def generate_n_planes(polyhedron, way, n=10000):
-    '''
-    генерирует n плоскостей способом way и возвращает плотность распределения
-    углов секущих многогранников
-    '''
-    angles = [0]*181
+# def generate_n_planes(polyhedron, way, n=10000):
+#     '''
+#     генерирует n плоскостей способом way и возвращает плотность распределения
+#     углов секущих многогранников
+#     '''
+#     angles = [0]*181
     
-    for i in range(n):
-        angs = generate_random_plane_angles(polyhedron=polyhedron, way=way)
-        if len(angs) != 0:
-            for ang in angs:
-                angles[ang] += 1
+#     for i in range(n):
+#         angs = generate_random_plane_angles(polyhedron=polyhedron, way=way)
+#         if len(angs) != 0:
+#             for ang in angs:
+#                 angles[ang] += 1
     
-    return list(np.array(angles)/np.sum(angles))
+#     return list(np.array(angles)/np.sum(angles))
 
 
-def generate_random_plane_angles_wcco(polyhedron, way, r, k):
-    '''
-    генерирует плоскость внутри многогранника polyhedron способом way
-    и возвращает список углов секущего многогранника
-    рекомендуется выбирать way, полностью замощающий polyhedron
-    в polyhedron должен быть реализован метод intersection_with_plane
-    '''
-    plane = way(r, k)
-    # отбираем только те плоскости у которых непустое пересечение с многогранником
-    points_intersection = polyhedron.intersection_with_plane(plane)
-    if len(points_intersection) != 0:
-        return get_angles(points_intersection)
-    else:
-        return []
+# def generate_random_plane_angles_wcco(polyhedron, way, r, k):
+#     '''
+#     генерирует плоскость внутри многогранника polyhedron способом way
+#     и возвращает список углов секущего многогранника
+#     рекомендуется выбирать way, полностью замощающий polyhedron
+#     в polyhedron должен быть реализован метод intersection_with_plane
+#     '''
+#     plane = way(r, k)
+#     # отбираем только те плоскости у которых непустое пересечение с многогранником
+#     points_intersection = polyhedron.intersection_with_plane(plane)
+#     if len(points_intersection) != 0:
+#         return get_angles(points_intersection)
+#     else:
+#         return []
 
 
-def generate_n_planes_wcco(polyhedron, way, r, k, n=10000):
-    '''
-    генерирует n плоскостей способом way и возвращает плотность распределения
-    углов секущих многогранников
-    '''
-    angles = [0]*181
+# def generate_n_planes_wcco(polyhedron, way, r, k, n=10000):
+#     '''
+#     генерирует n плоскостей способом way и возвращает плотность распределения
+#     углов секущих многогранников
+#     '''
+#     angles = [0]*181
     
-    for i in range(n):
-        angs = generate_random_plane_angles_wcco(polyhedron=polyhedron, way=way, r=r, k=k)
-        if len(angs) != 0:
-            for ang in angs:
-                angles[ang] += 1
+#     for i in range(n):
+#         angs = generate_random_plane_angles_wcco(polyhedron=polyhedron, way=way, r=r, k=k)
+#         if len(angs) != 0:
+#             for ang in angs:
+#                 angles[ang] += 1
     
-    return list(np.array(angles)/np.sum(angles))
+#     return list(np.array(angles)/np.sum(angles))
 
 
-def generate_random_plane_angles_type_wcco(polyhedron, way, r, k):
-    '''
-    генерирует плоскость внутри многогранника polyhedron способом way
-    и возвращает список углов секущего многогранника и тип пересечения 
-    0 - не пересекает базальные плоскости
-    1 - одно пересечение
-    2 - два пересечения
-    рекомендуется выбирать way, полностью замощающий polyhedron
-    в polyhedron должен быть реализован метод intersection_with_basal
-    '''
-    plane = way(r, k)
-    # отбираем только те плоскости у которых непустое пересечение с многогранником
-    points_intersection, tpe = polyhedron.intersection_with_basal(plane)
-    if len(points_intersection) != 0:
-        return get_angles(points_intersection), tpe
-    else:
-        return [], tpe
+# def generate_random_plane_angles_type_wcco(polyhedron, way, r, k):
+#     '''
+#     генерирует плоскость внутри многогранника polyhedron способом way
+#     и возвращает список углов секущего многогранника и тип пересечения 
+#     0 - не пересекает базальные плоскости
+#     1 - одно пересечение
+#     2 - два пересечения
+#     рекомендуется выбирать way, полностью замощающий polyhedron
+#     в polyhedron должен быть реализован метод intersection_with_basal
+#     '''
+#     plane = way(r, k)
+#     # отбираем только те плоскости у которых непустое пересечение с многогранником
+#     points_intersection, tpe = polyhedron.intersection_with_basal(plane)
+#     if len(points_intersection) != 0:
+#         return get_angles(points_intersection), tpe
+#     else:
+#         return [], tpe
     
     
-def generate_n_planes_type_wcco(polyhedron, way, r, k, n=10000):
-    '''
-    генерирует n плоскостей способом way и возвращает плотность распределения
-    углов секущих многогранников
-    '''
-    angles = np.zeros((3, 181)) #= [0]*181
+# def generate_n_planes_type_wcco(polyhedron, way, r, k, n=10000):
+#     '''
+#     генерирует n плоскостей способом way и возвращает плотность распределения
+#     углов секущих многогранников
+#     '''
+#     angles = np.zeros((3, 181)) #= [0]*181
     
-    for i in range(n):
-        angs, tpe = generate_random_plane_angles_type_wcco(polyhedron=polyhedron, way=way, r=r, k=k)
-        if len(angs) != 0:
-            for ang in angs:
-                angles[tpe][ang] += 1
+#     for i in range(n):
+#         angs, tpe = generate_random_plane_angles_type_wcco(polyhedron=polyhedron, way=way, r=r, k=k)
+#         if len(angs) != 0:
+#             for ang in angs:
+#                 angles[tpe][ang] += 1
     
-    return list(np.array(angles)/np.sum(angles))
+#     return list(np.array(angles)/np.sum(angles))
 
 
 class Cube():
-    #куб с вершиной А в нуле координат и заданной длиной ребра, находится в первой полуплоскости для каждой пары осей
+    """
+    Represents a cube with one vertex at the origin and a specified side length, located in the first octant for each pair of axes.
+
+    Attributes:
+        side (float): The length of the side of the cube.
+        center (Point): The center point of the cube.
+        A (Point): Vertex A of the cube.
+        B (Point): Vertex B of the cube.
+        C (Point): Vertex C of the cube.
+        D (Point): Vertex D of the cube.
+        E (Point): Vertex E of the cube.
+        F (Point): Vertex F of the cube.
+        G (Point): Vertex G of the cube.
+        H (Point): Vertex H of the cube.
+        iterable_points (list): List of all vertices of the cube.
+        names (list): Names of the vertices of the cube.
+        AB (Line): Line segment AB.
+        BC (Line): Line segment BC.
+        AD (Line): Line segment AD.
+        DC (Line): Line segment DC.
+        AE (Line): Line segment AE.
+        BF (Line): Line segment BF.
+        CG (Line): Line segment CG.
+        DH (Line): Line segment DH.
+        EF (Line): Line segment EF.
+        EH (Line): Line segment EH.
+        FG (Line): Line segment FG.
+        HG (Line): Line segment HG.
+        ABC (Plane): Plane ABC.
+        FEG (Plane): Plane FEG.
+        ABF (Plane): Plane ABF.
+        BCG (Plane): Plane BCG.
+        CDH (Plane): Plane CDH.
+        ADE (Plane): Plane ADE.
+        iterable_edges (list): List of all edges of the cube.
+        iterable_planes (list): List of all planes of the cube.
+        iterable_facets (list): List of all facets of the cube.
+
+    Methods:
+        intersection_with_plane(plane): Finds the intersection points of the cube with a given plane.
+    """
+
     def __init__(self, side=1, center=Point(0.5, 0.5, 0.5)):
-        
+
+        """
+        Initialize a Cube object with the specified side length and center point.
+
+        Args:
+            side (float, optional): The length of the side of the cube. Defaults to 1.
+            center (Point, optional): The center point of the cube. Defaults to Point(0.5, 0.5, 0.5).
+        """
+
         self.side = side
         self.center = center
         a = side
@@ -587,9 +742,8 @@ class Cube():
                 distances = [distance(last, x) for x in intersections]
                 # We're only interested in the index of the next point,
                 # this min function returns the minimum (index, distance)
-                # tuple...
                 successor = min(enumerate(distances), key=lambda x: x[1])
-                # ...but we only need the index :)
+                # but we only need the index
                 successor = successor[0]
                 polygon.append(intersections.pop(successor))
 
@@ -599,7 +753,41 @@ class Cube():
         
 
 class RegularTriangularPrism():
-    #Правильная треугольная призма, 
+    """
+    Represents a regular triangular prism.
+
+    Attributes:
+        side (float): The length of the side of the triangular base.
+        A (Point): Vertex A of the prism.
+        B (Point): Vertex B of the prism.
+        C (Point): Vertex C of the prism.
+        D (Point): Vertex D of the prism.
+        E (Point): Vertex E of the prism.
+        F (Point): Vertex F of the prism.
+        iterable_points (list): List of all vertices of the prism.
+        names (list): Names of the vertices of the prism.
+        AB (Line): Line segment AB.
+        BC (Line): Line segment BC.
+        AC (Line): Line segment AC.
+        AD (Line): Line segment AD.
+        BE (Line): Line segment BE.
+        CF (Line): Line segment CF.
+        DE (Line): Line segment DE.
+        DF (Line): Line segment DF.
+        FE (Line): Line segment FE.
+        ABD (Plane): Plane ABD.
+        ACD (Plane): Plane ACD.
+        CBE (Plane): Plane CBE.
+        ABC (Plane): Plane ABC.
+        DEF (Plane): Plane DEF.
+        iterable_edges (list): List of all edges of the prism.
+        iterable_planes (list): List of all planes of the prism.
+        iterable_facets (list): List of all facets of the prism.
+
+    Methods:
+        intersection_with_plane(plane): Finds the intersection points of the prism with a given plane.
+
+    """
     def __init__(self, side=1.):
         
 
@@ -663,7 +851,7 @@ class RegularTriangularPrism():
             
             right_triangle = [self.A, self.B, self.C]
             return (
-                is_point_in_triangle(point=[point[0], point[1], 0], polygon=right_triangle)
+                is_point_in_triangle(point=[point[0], point[1], 0], triangle=right_triangle)
                 and self.A.z <= point.z <= self.D.z
             )
         
@@ -684,7 +872,7 @@ class RegularTriangularPrism():
                 for i, p in enumerate(intersections):
                     uu_kostyl += 1
                     flag = False
-                    for plane in self.iterable_facets:
+                    for plane in self.iterable_planes:
                         if (p in plane) and (point in plane):
                             polygon.append(p)
                             del intersections[i]
@@ -702,9 +890,58 @@ class RegularTriangularPrism():
 
 
 class Parallelepiped():
-    #параллелепипед с вершиной А в нуле координат и заданной длиной ребра, находится в первой полуплоскости для каждой пары осей
+    """
+    Represents a parallelepiped.
+
+    Attributes:
+        side_a (float): The length of the parallelepiped along the x-axis.
+        side_b (float): The length of the parallelepiped along the y-axis.
+        side_c (float): The length of the parallelepiped along the z-axis.
+        A (Point): Vertex A of the parallelepiped.
+        B (Point): Vertex B of the parallelepiped.
+        C (Point): Vertex C of the parallelepiped.
+        D (Point): Vertex D of the parallelepiped.
+        E (Point): Vertex E of the parallelepiped.
+        F (Point): Vertex F of the parallelepiped.
+        G (Point): Vertex G of the parallelepiped.
+        H (Point): Vertex H of the parallelepiped.
+        iterable_points (list): List of all vertices of the parallelepiped.
+        names (list): Names of the vertices of the parallelepiped.
+        AB (Line): Line segment AB.
+        BC (Line): Line segment BC.
+        AD (Line): Line segment AD.
+        DC (Line): Line segment DC.
+        AE (Line): Line segment AE.
+        BF (Line): Line segment BF.
+        CG (Line): Line segment CG.
+        DH (Line): Line segment DH.
+        EF (Line): Line segment EF.
+        EH (Line): Line segment EH.
+        FG (Line): Line segment FG.
+        HG (Line): Line segment HG.
+        iterable_edges (list): List of all edges of the parallelepiped.
+        ABC (Plane): Plane ABC.
+        FEG (Plane): Plane FEG.
+        ABF (Plane): Plane ABF.
+        BCG (Plane): Plane BCG.
+        CDH (Plane): Plane CDH.
+        ADE (Plane): Plane ADE.
+        iterable_planes (list): List of all planes of the parallelepiped.
+        iterable_facets (list): List of all facets of the parallelepiped.
+
+    Methods:
+        intersection_with_plane(plane): Finds the intersection points of the parallelepiped with a given plane.
+
+    """
     def __init__(self, side_a=1, side_b=2, side_c=3):
-        
+        """
+        Initialize a Parallelepiped object with the specified side lengths.
+
+        Args:
+            side_a (float, optional): The length of the parallelepiped along the x-axis. Defaults to 1.0.
+            side_b (float, optional): The length of the parallelepiped along the y-axis. Defaults to 2.0.
+            side_c (float, optional): The length of the parallelepiped along the z-axis. Defaults to 3.0.
+        """
         
         self.side_a = side_a
         self.side_b = side_b
@@ -807,7 +1044,73 @@ class Parallelepiped():
 
 
 class WCCoPrism():
+    """
+    Represents a truncated triangular prism.
+
+    Attributes:
+        a (float): Length of the first segment.
+        b (float): Length of the second segment.
+        w (float): Width of the truncated triangular prism.
+        t (float): Height of the truncated triangular prism.
+        A (Point): Vertex A of the prism base.
+        B (Point): Vertex B of the prism base.
+        C (Point): Vertex C of the prism base.
+        D (Point): Vertex D of the prism base.
+        E (Point): Vertex E of the prism base.
+        F (Point): Vertex F of the prism base.
+        G (Point): Vertex G of the top face.
+        H (Point): Vertex H of the top face.
+        I (Point): Vertex I of the top face.
+        J (Point): Vertex J of the top face.
+        K (Point): Vertex K of the top face.
+        L (Point): Vertex L of the top face.
+        iterable_points (list): List of all vertices of the prism.
+        names (list): Names of the vertices of the prism.
+        AB (Line): Line segment AB.
+        BC (Line): Line segment BC.
+        CD (Line): Line segment CD.
+        DE (Line): Line segment DE.
+        EF (Line): Line segment EF.
+        FA (Line): Line segment FA.
+        AG (Line): Line segment AG.
+        BH (Line): Line segment BH.
+        CI (Line): Line segment CI.
+        DJ (Line): Line segment DJ.
+        EK (Line): Line segment EK.
+        FL (Line): Line segment FL.
+        GH (Line): Line segment GH.
+        HI (Line): Line segment HI.
+        IJ (Line): Line segment IJ.
+        JK (Line): Line segment JK.
+        KL (Line): Line segment KL.
+        LG (Line): Line segment LG.
+        ABC (Plane): Plane ABC.
+        GHI (Plane): Plane GHI.
+        ABH (Plane): Plane ABH.
+        BCH (Plane): Plane BCH.
+        CDJ (Plane): Plane CDJ.
+        DEK (Plane): Plane DEK.
+        EFL (Plane): Plane EFL.
+        FAG (Plane): Plane FAG.
+        iterable_edges (list): List of all edges of the prism.
+        iterable_planes (list): List of all planes of the prism.
+        iterable_facets (list): List of all facets of the prism.
+
+    Methods:
+        is_point_in_truncated_triangle(point): Checks if a point is inside the truncated triangle.
+        intersection_with_plane(plane): Finds the intersection points of the prism with a given plane.
+        intersection_with_basal(plane): Finds the intersection points of the prism with the basal planes.
+
+    """
     def __init__(self, r, k, m=1):
+        """
+        Initializes a WCCoPrism object with the given parameters.
+
+        Args:
+        r (float): Length of the first segment.
+        k (float): Length of the second segment.
+        m (float, optional): Length of the third segment. Default is 1. Default a+2b=1.
+        """
         
         self.a, self.b, self.w, self.t = from_rk_to_abwt(r, k, m=m)
         
@@ -937,7 +1240,7 @@ class WCCoPrism():
                 for i, p in enumerate(intersections):
                     uu_kostyl += 1
                     flag = False
-                    for plane in self.iterable_facets:
+                    for plane in self.iterable_planes:
                         if (p in plane) and (point in plane):
                             polygon.append(p)
                             del intersections[i]
@@ -982,80 +1285,100 @@ class WCCoPrism():
 
 
 def get_path_from_r_k(r, k, n=100000):
+    '''
+    Generates a path based on the parameters r, k, and n.
+
+    Args:
+        r (float): The parameter r.
+        k (float): The parameter k.
+        n (int, optional): The number of steps. Default is 100000.
+
+    Returns:
+        str: A string representing the path based on the input parameters.
+    '''
     return "r=" + str(r) + "_k=" + str(k) + "_n=" + str(n)
 
-
-def get_distribution_form_r_k(path, r, k, n=100000):
-    '''
-    посчитать распределение и записать на диск
-    '''
-    path_ = get_path_from_r_k(r, k, n)
+#углы
+# def get_distribution_form_r_k(path, r, k, n=100000):
+#     '''
+#     посчитать распределение и записать на диск
+#     '''
+#     path_ = get_path_from_r_k(r, k, n)
     
-    try:
-        arr = np.loadtxt(path + "carbid_model_distributions/" + path_ + ".txt")
-    except:
-        arr = generate_n_planes_wcco(polyhedron=WCCoPrism(r=r, k=k), way=make_random_plane_into_wcco, r=r, k=k, n=n)
+#     try:
+#         arr = np.loadtxt(path + "carbid_model_distributions/" + path_ + ".txt")
+#     except:
+#         arr = generate_n_planes_wcco(polyhedron=WCCoPrism(r=r, k=k), way=make_random_plane_into_wcco, r=r, k=k, n=n)
         
-        path_to_save = path + "carbid_model_distributions/" + path_ + ".txt"
-        np.savetxt(path_to_save, np.array(arr))
-    return arr
+#         path_to_save = path + "carbid_model_distributions/" + path_ + ".txt"
+#         np.savetxt(path_to_save, np.array(arr))
+#     return arr
 
 
-def make_plot_from_r_k(path, r, k, n=100000):
-    '''
-    попытаться считать с диска, если для таких параметров уже посчитано распределение,
-    то просто его выгрузить. Иначе посчитать.
+# def make_plot_from_r_k(path, r, k, n=100000):
+#     '''
+#     попытаться считать с диска, если для таких параметров уже посчитано распределение,
+#     то просто его выгрузить. Иначе посчитать.
     
-    И сделать график
-    '''
+#     И сделать график
+#     '''
     
-    path_ = get_path_from_r_k(r, k, n)
-    description = "Распределение углов секущих многогранников для усечённой призмы с параметрами r=" + str(r) \
-    + ", k=" + str(k)
+#     path_ = get_path_from_r_k(r, k, n)
+#     description = "Распределение углов секущих многогранников для усечённой призмы с параметрами r=" + str(r) \
+#     + ", k=" + str(k)
     
-    try:
-        arr = np.loadtxt(path + "carbid_model_distributions/" + path_ + ".txt")
-    except:
-        arr = np.array(get_distribution_form_r_k(path, r=r, k=k, n=n))
+#     try:
+#         arr = np.loadtxt(path + "carbid_model_distributions/" + path_ + ".txt")
+#     except:
+#         arr = np.array(get_distribution_form_r_k(path, r=r, k=k, n=n))
     
-    plt.figure(figsize=(7,7))
-    plt.plot(arr)
-    plt.title(description)
-    plt.savefig(path + "carbid_model_plots/" + path_ + ".pdf", format='pdf')
-    plt.show()
-    #plt.clean_output()
+#     plt.figure(figsize=(7,7))
+#     plt.plot(arr)
+#     plt.title(description)
+#     plt.savefig(path + "carbid_model_plots/" + path_ + ".pdf", format='pdf')
+#     plt.show()
+#     #plt.clean_output()
     
-    #0 1    99 [100 101 102    119 120 121 123] это индексы считала
+#     #0 1    99 [100 101 102    119 120 121 123] это индексы считала
     
-    peaks = {'fa': arr[:100].argmax(), #first argument(about 90)
-             'fm': arr[:100].max(),    #first max
-             'sa': 100 + arr[100:].argmax(), #second argument(about 120)
-             'sm': arr[100:].max()     #second max
-            }
+#     peaks = {'fa': arr[:100].argmax(), #first argument(about 90)
+#              'fm': arr[:100].max(),    #first max
+#              'sa': 100 + arr[100:].argmax(), #second argument(about 120)
+#              'sm': arr[100:].max()     #second max
+#             }
     
-    #запишем в словать
-    with open(path + 'peaks_dictionary/' + path_ + '.pkl', 'wb') as f:
-        pickle.dump(peaks, f)
+#     #запишем в словать
+#     with open(path + 'peaks_dictionary/' + path_ + '.pkl', 'wb') as f:
+#         pickle.dump(peaks, f)
 
-#     открыть словарь с пиками
-#     with open('peaks_dictionary/' + path_ + '.pkl', 'rb') as f:
-#         loaded_dict = pickle.load(f)
+# #     открыть словарь с пиками
+# #     with open('peaks_dictionary/' + path_ + '.pkl', 'rb') as f:
+# #         loaded_dict = pickle.load(f)
     
-    return peaks
+#     return peaks
 
 
 def secant_polygon(polyhedron, way, params=None):
     '''
-    генерирует плоскость внутри многогранника polyhedron способом way
-    и возвращает список вершин секущего многогранника
-    рекомендуется выбирать way, полностью замощающий polyhedron
-    в polyhedron должен быть реализован метод intersection_with_plane
+    Generates a plane inside the polyhedron using the specified method and returns a list of vertices of the secant polygon.
+
+    Args:
+        polyhedron: An object representing the polyhedron.
+        way: A method for generating the plane.
+        params (dict, optional): Parameters for the method, if required. Default is None.
+
+    Returns:
+        list: A list of vertices of the secant polygon.
+
+    Notes:
+        It is recommended to choose a way that fully tiles the polyhedron.
+        The polyhedron object must have the method 'intersection_with_plane' implemented.
     '''
     if params:
         plane = way(**params)
     else:
         plane = way()
-    # отбираем только те плоскости у которых непустое пересечение с многогранником
+    # Select only planes that have a non-empty intersection with the polyhedron
     points_intersection = polyhedron.intersection_with_plane(plane)
     return points_intersection
 
@@ -2313,6 +2636,16 @@ def from_list_points_to_array(points):
     for i in range(len(points)):
         vecs[i] = points[i][0], points[i][1], points[i][2]
     return vecs
+
+
+def from_list_array_to_points(points_arr):
+    '''
+    transform array of 3D coordinates to list of Points 
+    '''
+    points = []
+    for i in range(len(points_arr)):
+        points.append(Point(points_arr[i][0], points_arr[i][1], points_arr[i][2]))
+    return points
     
 
 def proportion_S(triangles):

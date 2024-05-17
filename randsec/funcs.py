@@ -1383,120 +1383,119 @@ def secant_polygon(polyhedron, way, params=None):
     return points_intersection
 
 
-def plot_secant_polygon(type_figure='cube'):
-    '''
-    построение 3D графика фигуры type_figure и ее случайного сечения
-    '''
-    if type_figure=='cube':
-        fig = plt.figure()
-        ax = fig.add_subplot(111, projection='3d')
+# def plot_secant_polygon(type_figure='cube'):
+#     '''
+#     построение 3D графика фигуры type_figure и ее случайного сечения
+#     '''
+#     if type_figure=='cube':
+#         fig = plt.figure()
+#         ax = fig.add_subplot(111, projection='3d')
 
-        center_cube = (0.5, 0.5, 0.5)
-        side_cube = 1.0
-        half_side_cube = side_cube / 2
-        vertices_cube = [
-            (center_cube[0] - half_side_cube, center_cube[1] - half_side_cube, center_cube[2] - half_side_cube),
-            (center_cube[0] - half_side_cube, center_cube[1] - half_side_cube, center_cube[2] + half_side_cube),
-            (center_cube[0] - half_side_cube, center_cube[1] + half_side_cube, center_cube[2] - half_side_cube),
-            (center_cube[0] - half_side_cube, center_cube[1] + half_side_cube, center_cube[2] + half_side_cube),
-            (center_cube[0] + half_side_cube, center_cube[1] - half_side_cube, center_cube[2] - half_side_cube),
-            (center_cube[0] + half_side_cube, center_cube[1] - half_side_cube, center_cube[2] + half_side_cube),
-            (center_cube[0] + half_side_cube, center_cube[1] + half_side_cube, center_cube[2] - half_side_cube),
-            (center_cube[0] + half_side_cube, center_cube[1] + half_side_cube, center_cube[2] + half_side_cube)
-        ]
+#         center_cube = (0.5, 0.5, 0.5)
+#         side_cube = 1.0
+#         half_side_cube = side_cube / 2
+#         vertices_cube = [
+#             (center_cube[0] - half_side_cube, center_cube[1] - half_side_cube, center_cube[2] - half_side_cube),
+#             (center_cube[0] - half_side_cube, center_cube[1] - half_side_cube, center_cube[2] + half_side_cube),
+#             (center_cube[0] - half_side_cube, center_cube[1] + half_side_cube, center_cube[2] - half_side_cube),
+#             (center_cube[0] - half_side_cube, center_cube[1] + half_side_cube, center_cube[2] + half_side_cube),
+#             (center_cube[0] + half_side_cube, center_cube[1] - half_side_cube, center_cube[2] - half_side_cube),
+#             (center_cube[0] + half_side_cube, center_cube[1] - half_side_cube, center_cube[2] + half_side_cube),
+#             (center_cube[0] + half_side_cube, center_cube[1] + half_side_cube, center_cube[2] - half_side_cube),
+#             (center_cube[0] + half_side_cube, center_cube[1] + half_side_cube, center_cube[2] + half_side_cube)
+#         ]
 
-        # Соединения вершин для куба
-        edges_cube = [
-            (0, 1), (1, 3), (3, 2), (2, 0),
-            (4, 5), (5, 7), (7, 6), (6, 4),
-            (0, 4), (1, 5), (2, 6), (3, 7)
-        ]
+#         # Соединения вершин для куба
+#         edges_cube = [
+#             (0, 1), (1, 3), (3, 2), (2, 0),
+#             (4, 5), (5, 7), (7, 6), (6, 4),
+#             (0, 4), (1, 5), (2, 6), (3, 7)
+#         ]
 
-        # Рисуем грани
-        for edge in edges_cube:
-            x = [vertices_cube[edge[0]][0], vertices_cube[edge[1]][0]]
-            y = [vertices_cube[edge[0]][1], vertices_cube[edge[1]][1]]
-            z = [vertices_cube[edge[0]][2], vertices_cube[edge[1]][2]]
-            ax.plot(x, y, z, color='purple')
+#         # Рисуем грани
+#         for edge in edges_cube:
+#             x = [vertices_cube[edge[0]][0], vertices_cube[edge[1]][0]]
+#             y = [vertices_cube[edge[0]][1], vertices_cube[edge[1]][1]]
+#             z = [vertices_cube[edge[0]][2], vertices_cube[edge[1]][2]]
+#             ax.plot(x, y, z, color='purple')
 
-        ax.set_xlabel('X')
-        ax.set_ylabel('Y')
-        ax.set_zlabel('Z')
-        plt.title('Куб со стороной '+ str(side_cube) + ' и центром ' + str(center_cube))
+#         ax.set_xlabel('X')
+#         ax.set_ylabel('Y')
+#         ax.set_zlabel('Z')
+#         plt.title('Куб со стороной '+ str(side_cube) + ' и центром ' + str(center_cube))
         
-        vertices = secant_polygon(Cube(), make_random_plane_into_cube)
-        print('Area is: ', area_of_polygon_3d(vertices))
+#         vertices = secant_polygon(Cube(), make_random_plane_into_cube)
+#         print('Area is: ', area_of_polygon_3d(vertices))
 
-        # Добавление линий между вершинами
-        for i in range(len(vertices)):
-            x1, y1, z1 = vertices[i]
-            x2, y2, z2 = vertices[(i + 1) % len(vertices)]
-            ax.plot([x1, x2], [y1, y2], [z1, z2], color='green')
+#         # Добавление линий между вершинами
+#         for i in range(len(vertices)):
+#             x1, y1, z1 = vertices[i]
+#             x2, y2, z2 = vertices[(i + 1) % len(vertices)]
+#             ax.plot([x1, x2], [y1, y2], [z1, z2], color='green')
 
-        # Добавление вершин
-        for vertex in vertices:
-            x, y, z = vertex
-            ax.scatter(x, y, z, color='blue')
-        plt.show()
+#         # Добавление вершин
+#         for vertex in vertices:
+#             x, y, z = vertex
+#             ax.scatter(x, y, z, color='blue')
+#         plt.show()
         
         
-def draw_ellipse(center, radii, rotation_matrix, num_points=100):
-    '''
-    Функция отрисовки эллипса
-    '''
-    # Parameters of the ellipse
-    theta = np.linspace(0, 2 * np.pi, num_points)
-    cos_theta = np.cos(theta)
-    sin_theta = np.sin(theta)
+# def draw_ellipse(center, radii, rotation_matrix, num_points=100):
+#     '''
+#     Функция отрисовки эллипса
+#     '''
+#     # Parameters of the ellipse
+#     theta = np.linspace(0, 2 * np.pi, num_points)
+#     cos_theta = np.cos(theta)
+#     sin_theta = np.sin(theta)
 
-    # Create the ellipse without rotation
-    x = radii[0] * cos_theta
-    y = radii[1] * sin_theta
+#     # Create the ellipse without rotation
+#     x = radii[0] * cos_theta
+#     y = radii[1] * sin_theta
 
-    # Apply rotation using the rotation matrix
-    points = np.vstack((x, y))
-    rotated_points = np.dot(rotation_matrix, points)
+#     # Apply rotation using the rotation matrix
+#     points = np.vstack((x, y))
+#     rotated_points = np.dot(rotation_matrix, points)
 
-    # Transpose the rotated points to get x and y
-    x_rotated, y_rotated = rotated_points
+#     # Transpose the rotated points to get x and y
+#     x_rotated, y_rotated = rotated_points
 
-    # Offset by the center
-    x_rotated += center[0]
-    y_rotated += center[1]
+#     # Offset by the center
+#     x_rotated += center[0]
+#     y_rotated += center[1]
 
-    # Plot the ellipse
-    plt.figure(figsize=(6, 6))
-    plt.plot(x_rotated, y_rotated)
-    plt.xlabel('X')
-    plt.ylabel('Y')
-    plt.title('2D Ellipse')
-    plt.grid(True)
-    plt.axis('equal')
-    print('Semiaxes: {:.2f}, {:.2f}'.format(radii[0], radii[1]))
+#     # Plot the ellipse
+#     plt.figure(figsize=(6, 6))
+#     plt.plot(x_rotated, y_rotated)
+#     plt.xlabel('X')
+#     plt.ylabel('Y')
+#     plt.title('2D Ellipse')
+#     plt.grid(True)
+#     plt.axis('equal')
+#     print('Semiaxes: {:.2f}, {:.2f}'.format(radii[0], radii[1]))
         
 
 def norm_dict(char_dict, step):
     '''
-    Нормирует характеристику, поданную словарём, чтобы получить из гистограммы плотность вероятности
-    Например, на вход подается гистограмма площадей:
-    (Nebo от 24.10)
-    
-    {0.00: 5,
-     0.01: 10,
-     ...}
-    step = 0.01
-    
-    Нужно каждое значение из словаря поделить на норм. константу
-    norm_const = step*(values.sum())
-    
+    Normalizes a characteristic provided as a dictionary to obtain the probability density from a histogram.
+
+    Parameters:
+        char_dict: dict
+            Dictionary representing the characteristic histogram.
+        step: float
+            Step size used in the histogram.
+
+    Returns:
+        dict
+            Normalized dictionary representing the probability density.
     '''
     norm_const = step*sum(char_dict.values())
-    return {key: value/norm_const for key, value in char_dict.items()} #генератор списков
+    return {key: value/norm_const for key, value in char_dict.items()}
 
 
-#code from https://github.com/minillinim/ellipsoid/blob/master/ellipsoid.py
 def getMinVolEllipse(P=None, tolerance=0.0001):
     """ Find the minimum volume ellipsoid which holds all the points
+    code from https://github.com/minillinim/ellipsoid/blob/master/ellipsoid.py
 
     Based on work by Nima Moshtagh
     http://www.mathworks.com/matlabcentral/fileexchange/9542
@@ -1554,11 +1553,24 @@ def getMinVolEllipse(P=None, tolerance=0.0001):
 
 def find_rotation_matrix(Ax, Ay, Bx, By):
     '''
-    get rotation matrix from one plane, containing vectors Ax, Ay 
-    to another plane, containing vectors Bx, By
-    https://math.stackexchange.com/questions/1876615/rotation-matrix-from-plane-a-to-b
-    
-    it works!! science!! is a power!!
+    Computes the rotation matrix from one plane containing vectors Ax and Ay to another plane containing vectors Bx and By.
+
+    Parameters:
+        Ax: numpy.ndarray
+            Vector representing the x-axis of the first plane.
+        Ay: numpy.ndarray
+            Vector representing the y-axis of the first plane.
+        Bx: numpy.ndarray
+            Vector representing the x-axis of the second plane.
+        By: numpy.ndarray
+            Vector representing the y-axis of the second plane.
+
+    Returns:
+        numpy.ndarray
+            Rotation matrix from the first plane to the second plane.
+
+    Notes:
+        yes!! yes!! science!!
     '''
     #make Ax атв Ay identity and orthogonal
     Ax = Ax/np.linalg.norm(Ax)
@@ -1568,8 +1580,6 @@ def find_rotation_matrix(Ax, Ay, Bx, By):
     Bx = Bx/np.linalg.norm(Bx)
     Bz = (np.cross(Bx, By))/np.linalg.norm(np.cross(Bx, By))
     By = (np.cross(Bx, Bz))/np.linalg.norm(np.cross(Bx, Bz))
-    
-    #print(np.dot(Ax, Ay), np.dot(Bx, By)) 0.0 0.0
     
     A = np.zeros((3, 3))
     B = np.zeros((3, 3))
@@ -1587,9 +1597,19 @@ def find_rotation_matrix(Ax, Ay, Bx, By):
 
 def rotate_points_to_Oxy(points):
     '''
-    polygon : (N, 3)
-    
-    return rotated_polygon(N, 2), rotation_matix, z-coordinate
+    Rotates a set of 3D points to align with the Oxy plane. points should be in the same plane
+
+    Parameters:
+        points: numpy.ndarray
+            Array of shape (N, 3) containing the 3D coordinates of points.
+
+    Returns:
+        numpy.ndarray
+            Array of shape (N, 2) containing the rotated 2D coordinates of points aligned with the Oxy plane.
+        numpy.ndarray
+            Rotation matrix used for the transformation.
+        float
+            z-coordinate of the rotated points.
     '''
     oxy_x = np.array([1., 0., 0])
     oxy_y = np.array([0., 1., 0])
@@ -1607,12 +1627,22 @@ def rotate_points_to_Oxy(points):
     
 def rotate_points_back_to_3D(rotated_polygon, rotation_matrix, z):
     '''
-    polygon : (N, 2)
-    
-    return polygon : (N, 3)
+    Rotates a set of 2D points back to 3D coordinates.
+
+    Parameters:
+        rotated_polygon: numpy.ndarray
+            Array of shape (N, 2) containing the rotated 2D coordinates of points.
+        rotation_matrix: numpy.ndarray
+            Rotation matrix used for the transformation.
+        z: float
+            z-coordinate of the points after rotation.
+
+    Returns:
+        numpy.ndarray
+            Array of shape (N, 3) containing the rotated 3D coordinates of points.
     '''
     polygon = np.zeros((len(rotated_polygon), 3))
-    polygon[:, :2] = rotated_polygon;
+    polygon[:, :2] = rotated_polygon
     polygon[:, 2] = z
     polygon = np.array([np.dot(rotation_matrix.T, point) for point in polygon])
     return polygon
@@ -1620,20 +1650,24 @@ def rotate_points_back_to_3D(rotated_polygon, rotation_matrix, z):
 
 def is_convex_polygon_2D(points):
     """
-    Проверяет, является ли многоугольник выпуклым.
+    Checks whether a 2D polygon is convex.
     
-    Аргументы:
-    points: список точек, представленных в виде кортежей (x, y), задающих вершины многоугольника.
+    Arguments:
+    points (list of tuples): List of points representing the vertices of the polygon. Each point is a tuple (x, y).
     
-    Возвращает:
-    True, если многоугольник выпуклый, False в противном случае.
+    Returns:
+    bool: True if the polygon is convex, False otherwise.
+    
+    Note:
+    A polygon must have at least 3 vertices to be considered convex.
     """
+
     n = len(points)
     if n < 3:
-        return False  # Многоугольник должен содержать минимум 3 вершины
+        return False  # A polygon must contain at least 3 vertices
 
-    # Проверяем направление оборота для каждой тройки последовательных вершин
-    # Если знак угла между последовательными отрезками меняется, многоугольник не выпуклый
+    # Check the orientation for each triplet of consecutive vertices
+    # If the sign of the angle between consecutive edges changes, the polygon is not convex
     def cross_product(p1, p2, p3):
         return (p2[0] - p1[0]) * (p3[1] - p2[1]) - (p2[1] - p1[1]) * (p3[0] - p2[0])
 
@@ -1644,24 +1678,43 @@ def is_convex_polygon_2D(points):
         p3 = points[(i + 2) % n]
         cp = cross_product(p1, p2, p3)
         if cp == 0:
-            continue  # Точки коллинеарны, продолжаем проверку
+            continue  # Points are collinear, continue checking
         if direction is None:
             direction = cp > 0
         elif direction != (cp > 0):
-            return False  # Знак угла изменился, многоугольник не выпуклый
-    return True
+            return False  # Sign of the angle changed, polygon is not convex
+    return True 
 
 
 def semiaxes_from_polygon_3D(polygon):
-    '''
-    polygon should contain at leats 3 points
-    '''
+    """
+    Calculates the lengths of the semiaxes of the minimum-volume ellipsoid enclosing a 3D polygon.
+
+    Arguments:
+    polygon (list of tuples): List of points representing the vertices of the 3D polygon.
+
+    Returns:
+    tuple: A tuple containing the lengths of the semiaxes of the minimum-volume ellipsoid. 
+    The first value represents the length of the minor semiaxis, and the second value represents the length of the major semiaxis.
+
+    Note:
+    The polygon should contain at least 3 non-collinear points.
+    """
     polygonOxy, _, _ = rotate_points_to_Oxy(polygon)
     _, radii, _ = getMinVolEllipse(polygonOxy)
     return min(radii), max(radii)
 
 
 def perimeter_3D(points):
+    """
+    Calculates the perimeter of a 3D polygon defined by its vertices.
+
+    Arguments:
+    points (list of tuples or numpy array): List of points representing the vertices of the 3D polygon.
+
+    Returns:
+    float: The perimeter of the 3D polygon.
+    """
     polygon = np.array([np.array(list(i)) for i in points])
     per = 0.
     n = len(points)
@@ -1671,7 +1724,32 @@ def perimeter_3D(points):
 
 
 def minmax_feret(polygon):
+    """
+    Calculates the minimum and maximum Feret diameters of a 3D polygon.
+
+    Arguments:
+    polygon (numpy array): Array containing the vertices of the 3D polygon.
+
+    Returns:
+    tuple: A tuple containing the minimum and maximum Feret diameters of the 3D polygon.
+    """
     _, ret_ix = antipodal_pairs(polygon)
+
+    def area2(i, j, k, poly):
+        x1, y1 = poly[i][0], poly[i][1]
+        x2, y2 = poly[j][0], poly[j][1]
+        x3, y3 = poly[k][0], poly[k][1]
+        
+        area = 0.5 * abs((x1*(y2-y3) + x2*(y3-y1) + x3*(y1-y2)))
+        return area
+
+
+    def dist2(i, j, poly):
+        x1, y1 = poly[i][0], poly[i][1]
+        x2, y2 = poly[j][0], poly[j][1]
+        
+        return ((x1-x2)**2 + (y1-y2)**2)**0.5
+
     #max feret diameter
     max_feret = 0
     for i in range(len(ret_ix)):
@@ -1707,469 +1785,489 @@ def minmax_feret(polygon):
 
 
 def characteristic_of_section(secant_polygon):
-    '''
-    возвращает список углов, площадь, полуоси
-    '''
-    #углы, площадь, полуоси
+    """
+    Calculates various characteristics of a 3D section obtained by intersecting a polyhedron.
+
+    Arguments:
+    secant_polygon (list of tuples or numpy array): List of points representing the vertices of the 3D section.
+
+    Returns:
+    tuple: A tuple containing the following characteristics:
+        - angles (list of float): List of angles in the section.
+        - area (float): Area of the section.
+        - perimeter (float): Perimeter of the section.
+        - a_semi (float): Semi-major axis of the ellipse fitted to the section.
+        - b_semi (float): Semi-minor axis of the ellipse fitted to the section.
+        - min_feret (float): Minimum Feret diameter of the section.
+        - max_feret (float): Maximum Feret diameter of the section.
+        - aspect_ratio (float): Aspect ratio of the fitted ellipse (min_feret / max_feret).
+        - sphericity (float): Sphericity of the section.
+    """
+
     if len(secant_polygon) > 2:
         angles = get_angles(secant_polygon)
         area = area_of_polygon_3d(secant_polygon)
         perim = perimeter_3D(secant_polygon)
         a_semi, b_semi = semiaxes_from_polygon_3D(secant_polygon)
+        min_feret, max_feret = minmax_feret(secant_polygon)
+        aspect_ratio = min_feret/max_feret
+        sphericity = 2*(np.pi*area)**0.5/perim
         
     else:
         angles = []
         area = 0.00
         a_semi, b_semi = 0.0, 0.0
-        perim = 0.
+        perim = 0.,
+        min_feret, max_feret = 0., 0.
+        aspect_ratio = 0.
+        sphericity = 0.
   
-    return angles, area, perim, a_semi, b_semi
+    return angles, area, perim, a_semi, b_semi, min_feret, max_feret, aspect_ratio, sphericity
 
 
-
-def calculate_all_distributions(polyhedron, way, type_figure='parallelepiped', n=10000, params=None):
+# def calculate_all_distributions(polyhedron, way, type_figure='parallelepiped', n=10000, params=None):
     
-    #PATH = os.path.join(os.getcwd(), 'densities')
+#     #PATH = os.path.join(os.getcwd(), 'densities')
 
-    os.makedirs('densities', exist_ok=True)
+#     os.makedirs('densities', exist_ok=True)
 
-    #углы
+#     #углы
 
-    #ПАРАЛЛЕЛЕПИПЕД
-    if type_figure == 'parallelepiped':
+#     #ПАРАЛЛЕЛЕПИПЕД
+#     if type_figure == 'parallelepiped':
 
-        if params:
-            a_side = params['side_a']
-            b_side = params['side_b']
-            c_side = params['side_c']
-        else:
-            a_side = 1.
-            b_side = 2.
-            c_side = 3.
-            params = {'side_a': 1.,
-                        'side_b': 2.,
-                        'side_c': 3.}
+#         if params:
+#             a_side = params['side_a']
+#             b_side = params['side_b']
+#             c_side = params['side_c']
+#         else:
+#             a_side = 1.
+#             b_side = 2.
+#             c_side = 3.
+#             params = {'side_a': 1.,
+#                         'side_b': 2.,
+#                         'side_c': 3.}
 
-        #path_ = PATH + r'\parallelepiped_a=' + str(a_side) + 'b=' + str(b_side) + 'c=' + str(c_side)
-        #path_ = os.path.join(PATH, f"parallelepiped_a={a_side}b={b_side}c={c_side}")
-        path_ = os.path.join("densities", f"parallelepiped_a={a_side}b={b_side}c={c_side}")
+#         #path_ = PATH + r'\parallelepiped_a=' + str(a_side) + 'b=' + str(b_side) + 'c=' + str(c_side)
+#         #path_ = os.path.join(PATH, f"parallelepiped_a={a_side}b={b_side}c={c_side}")
+#         path_ = os.path.join("densities", f"parallelepiped_a={a_side}b={b_side}c={c_side}")
 
-        try:
-            # angles = np.loadtxt(path_ + r'\anlges_N=' + str(n) + '.txt')
-            # areas = np.load(path_ + r'\areas_N=' + str(n) + '.npy', allow_pickle=True).item()
-            # a_semi = np.load(path_ + r'\asemi_N=' + str(n) + '.npy', allow_pickle=True).item()
-            # b_semi = np.load(path_ + r'\bsemi_N=' + str(n) + '.npy', allow_pickle=True).item()
-            # perimeter = np.load(path_ + r'\perimeter_N=' + str(n) + '.npy', allow_pickle=True).item()
-            # #semiaxes = np.load(path_ + r'\semiaxes_N=' + str(n) + '.npy')
-            # #ADD LOAD 4 PARAMS
-            # minferet = np.load(path_ + r'\minferet_N=' + str(n) + '.npy', allow_pickle=True).item()
-            # maxferet = np.load(path_ + r'\maxferet_N=' + str(n) + '.npy', allow_pickle=True).item()
-            # aspect = np.load(path_ + r'\aspect_N=' + str(n) + '.npy', allow_pickle=True).item()
-            # sphericity = np.load(path_ + r'\sphericity_N=' + str(n) + '.npy', allow_pickle=True).item()
-            angles = np.loadtxt(os.path.join(path_, f'anlges_N={n}.txt'))
-            areas = np.load(os.path.join(path_, f'areas_N={n}.npy'), allow_pickle=True).item()
-            a_semi = np.load(os.path.join(path_, f'asemi_N={n}.npy'), allow_pickle=True).item()
-            b_semi = np.load(os.path.join(path_, f'bsemi_N={n}.npy'), allow_pickle=True).item()
-            perimeter = np.load(os.path.join(path_, f'perimeter_N={n}.npy'), allow_pickle=True).item()
-            minferet = np.load(os.path.join(path_, f'minferet_N={n}.npy'), allow_pickle=True).item()
-            maxferet = np.load(os.path.join(path_, f'maxferet_N={n}.npy'), allow_pickle=True).item()
-            aspect = np.load(os.path.join(path_, f'aspect_N={n}.npy'), allow_pickle=True).item()
-            sphericity = np.load(os.path.join(path_, f'sphericity_N={n}.npy'), allow_pickle=True).item()
-
-
-        except:
-            angles = [0]*181
-
-            areas_dict = {} #пустой словать с ключами от 0.00 до a^2+b^2+c^2 #можно меньше
-            step = 0.01
-            current_key = 0.00
-            while current_key <= 10*(a_side**2 + b_side**2 + c_side**2):
-                areas_dict.setdefault(round(current_key, 2), 0)
-                current_key += step
+#         try:
+#             # angles = np.loadtxt(path_ + r'\anlges_N=' + str(n) + '.txt')
+#             # areas = np.load(path_ + r'\areas_N=' + str(n) + '.npy', allow_pickle=True).item()
+#             # a_semi = np.load(path_ + r'\asemi_N=' + str(n) + '.npy', allow_pickle=True).item()
+#             # b_semi = np.load(path_ + r'\bsemi_N=' + str(n) + '.npy', allow_pickle=True).item()
+#             # perimeter = np.load(path_ + r'\perimeter_N=' + str(n) + '.npy', allow_pickle=True).item()
+#             # #semiaxes = np.load(path_ + r'\semiaxes_N=' + str(n) + '.npy')
+#             # #ADD LOAD 4 PARAMS
+#             # minferet = np.load(path_ + r'\minferet_N=' + str(n) + '.npy', allow_pickle=True).item()
+#             # maxferet = np.load(path_ + r'\maxferet_N=' + str(n) + '.npy', allow_pickle=True).item()
+#             # aspect = np.load(path_ + r'\aspect_N=' + str(n) + '.npy', allow_pickle=True).item()
+#             # sphericity = np.load(path_ + r'\sphericity_N=' + str(n) + '.npy', allow_pickle=True).item()
+#             angles = np.loadtxt(os.path.join(path_, f'anlges_N={n}.txt'))
+#             areas = np.load(os.path.join(path_, f'areas_N={n}.npy'), allow_pickle=True).item()
+#             a_semi = np.load(os.path.join(path_, f'asemi_N={n}.npy'), allow_pickle=True).item()
+#             b_semi = np.load(os.path.join(path_, f'bsemi_N={n}.npy'), allow_pickle=True).item()
+#             perimeter = np.load(os.path.join(path_, f'perimeter_N={n}.npy'), allow_pickle=True).item()
+#             minferet = np.load(os.path.join(path_, f'minferet_N={n}.npy'), allow_pickle=True).item()
+#             maxferet = np.load(os.path.join(path_, f'maxferet_N={n}.npy'), allow_pickle=True).item()
+#             aspect = np.load(os.path.join(path_, f'aspect_N={n}.npy'), allow_pickle=True).item()
+#             sphericity = np.load(os.path.join(path_, f'sphericity_N={n}.npy'), allow_pickle=True).item()
 
 
-            perim_dict = {} #пустой словать с ключами от 0.00 до 6*max(a,b,c)
-            step = 0.01
-            current_key = 0.00
-            while current_key <= 20*max(a_side, b_side, c_side):
-                perim_dict.setdefault(round(current_key, 2), 0)
-                current_key += step
+#         except:
+#             angles = [0]*181
 
-            #max полуось <= max(a,b,c)
-            #semiaxes = np.zeros((10*round(max(a_side, b_side, c_side)*100)+1, 10*round(max(a_side, b_side, c_side)*100)+1))
+#             areas_dict = {} #пустой словать с ключами от 0.00 до a^2+b^2+c^2 #можно меньше
+#             step = 0.01
+#             current_key = 0.00
+#             while current_key <= 10*(a_side**2 + b_side**2 + c_side**2):
+#                 areas_dict.setdefault(round(current_key, 2), 0)
+#                 current_key += step
 
-            a_semi_dict = {} #пустой словать с ключами от 0.00 до max(a,b,c) с шагом 0.01
-            b_semi_dict = {}
-            step = 0.01
-            current_key = 0.00
-            while current_key <= 10*max(a_side, b_side, c_side):
-                a_semi_dict.setdefault(round(current_key, 2), 0)
-                b_semi_dict.setdefault(round(current_key, 2), 0)
-                current_key += step
 
-            minferet_dict = {} #пустой словать с ключами от 0.00 до max(a,b,c) с шагом 0.01
-            maxferet_dict = {}
-            aspect_dict = {}
-            sphericity_dict = {}
+#             perim_dict = {} #пустой словать с ключами от 0.00 до 6*max(a,b,c)
+#             step = 0.01
+#             current_key = 0.00
+#             while current_key <= 20*max(a_side, b_side, c_side):
+#                 perim_dict.setdefault(round(current_key, 2), 0)
+#                 current_key += step
 
-            step = 0.01
-            current_key = 0.00
-            while current_key <= 3*a_side*b_side*c_side:
-                minferet_dict.setdefault(round(current_key, 2), 0)
-                maxferet_dict.setdefault(round(current_key, 2), 0)
-                current_key += step
+#             #max полуось <= max(a,b,c)
+#             #semiaxes = np.zeros((10*round(max(a_side, b_side, c_side)*100)+1, 10*round(max(a_side, b_side, c_side)*100)+1))
+
+#             a_semi_dict = {} #пустой словать с ключами от 0.00 до max(a,b,c) с шагом 0.01
+#             b_semi_dict = {}
+#             step = 0.01
+#             current_key = 0.00
+#             while current_key <= 10*max(a_side, b_side, c_side):
+#                 a_semi_dict.setdefault(round(current_key, 2), 0)
+#                 b_semi_dict.setdefault(round(current_key, 2), 0)
+#                 current_key += step
+
+#             minferet_dict = {} #пустой словать с ключами от 0.00 до max(a,b,c) с шагом 0.01
+#             maxferet_dict = {}
+#             aspect_dict = {}
+#             sphericity_dict = {}
+
+#             step = 0.01
+#             current_key = 0.00
+#             while current_key <= 3*a_side*b_side*c_side:
+#                 minferet_dict.setdefault(round(current_key, 2), 0)
+#                 maxferet_dict.setdefault(round(current_key, 2), 0)
+#                 current_key += step
                 
-            current_key = 0.00    
-            while current_key <= 1.:
-                aspect_dict.setdefault(round(current_key, 2), 0)
-                sphericity_dict.setdefault(round(current_key, 2), 0)
-                current_key += step
+#             current_key = 0.00    
+#             while current_key <= 1.:
+#                 aspect_dict.setdefault(round(current_key, 2), 0)
+#                 sphericity_dict.setdefault(round(current_key, 2), 0)
+#                 current_key += step
 
-            num_errors = 0   
+#             num_errors = 0   
 
 
-            for i in range(n):
-                sec_polygon = secant_polygon(polyhedron, way, params=params)
-                if len(sec_polygon) > 2:
-                    polygonOxy = rotate_points_to_Oxy(sec_polygon)[0]
-                    #check convexity
-                    if is_convex_polygon_2D(polygonOxy):
-                        ang_sec = get_angles(sec_polygon)
-                        area = area_of_polygon_3d(sec_polygon)
-                        perim = perimeter_3D(sec_polygon)
-                        a_semi, b_semi = semiaxes_from_polygon_3D(sec_polygon)
+#             for i in range(n):
+#                 sec_polygon = secant_polygon(polyhedron, way, params=params)
+#                 if len(sec_polygon) > 2:
+#                     polygonOxy = rotate_points_to_Oxy(sec_polygon)[0]
+#                     #check convexity
+#                     if is_convex_polygon_2D(polygonOxy):
+#                         ang_sec = get_angles(sec_polygon)
+#                         area = area_of_polygon_3d(sec_polygon)
+#                         perim = perimeter_3D(sec_polygon)
+#                         a_semi, b_semi = semiaxes_from_polygon_3D(sec_polygon)
                         
-                        min_feret, max_feret = minmax_feret(polygonOxy)
-                        aspect_ratio = min_feret/max_feret
-                        sphericity = 2*(np.pi*area)**0.5/perim
-                        if aspect_ratio <= 1.:
-                            for ang in ang_sec:
-                                angles[ang] += 1
-                            areas_dict[round(area, 2)] += 1
-                            perim_dict[round(perim, 2)] += 1
-                            a_semi_dict[round(a_semi, 2)] += 1
-                            b_semi_dict[round(b_semi, 2)] += 1
+#                         min_feret, max_feret = minmax_feret(polygonOxy)
+#                         aspect_ratio = min_feret/max_feret
+#                         sphericity = 2*(np.pi*area)**0.5/perim
+#                         if aspect_ratio <= 1.:
+#                             for ang in ang_sec:
+#                                 angles[ang] += 1
+#                             areas_dict[round(area, 2)] += 1
+#                             perim_dict[round(perim, 2)] += 1
+#                             a_semi_dict[round(a_semi, 2)] += 1
+#                             b_semi_dict[round(b_semi, 2)] += 1
                             
-                            minferet_dict[round(min_feret, 2)] += 1
-                            maxferet_dict[round(max_feret, 2)] += 1
-                            aspect_dict[round(aspect_ratio, 2)] += 1
-                            sphericity_dict[round(sphericity, 2)] += 1
-                        else:
-                            num_errors += 1
-                    else:
-                        num_errors += 1
-                else:
-                    num_errors += 1
+#                             minferet_dict[round(min_feret, 2)] += 1
+#                             maxferet_dict[round(max_feret, 2)] += 1
+#                             aspect_dict[round(aspect_ratio, 2)] += 1
+#                             sphericity_dict[round(sphericity, 2)] += 1
+#                         else:
+#                             num_errors += 1
+#                     else:
+#                         num_errors += 1
+#                 else:
+#                     num_errors += 1
 
-            print('precision is ', 1-num_errors/n)
+#             print('precision is ', 1-num_errors/n)
 
-            angles = np.array(list(np.array(angles)/np.sum(angles)))
-            areas = norm_dict(areas_dict, step=0.01)
-            perimeter = norm_dict(perim_dict, step=0.01)
-            a_semi = norm_dict(a_semi_dict, step=0.01)
-            b_semi = norm_dict(b_semi_dict, step=0.01)
+#             angles = np.array(list(np.array(angles)/np.sum(angles)))
+#             areas = norm_dict(areas_dict, step=0.01)
+#             perimeter = norm_dict(perim_dict, step=0.01)
+#             a_semi = norm_dict(a_semi_dict, step=0.01)
+#             b_semi = norm_dict(b_semi_dict, step=0.01)
 
-            minferet = norm_dict(minferet_dict, step=0.01)
-            maxferet = norm_dict(maxferet_dict, step=0.01)
-            aspect = norm_dict(aspect_dict, step=0.01)
-            sphericity = norm_dict(sphericity_dict, step=0.01)
+#             minferet = norm_dict(minferet_dict, step=0.01)
+#             maxferet = norm_dict(maxferet_dict, step=0.01)
+#             aspect = norm_dict(aspect_dict, step=0.01)
+#             sphericity = norm_dict(sphericity_dict, step=0.01)
 
-            os.makedirs(path_, exist_ok=True)
+#             os.makedirs(path_, exist_ok=True)
 
-            # np.savetxt(path_ + r'\anlges_N=' + str(n) + '.txt', angles)
-            # np.save(path_ + r'\areas_N=' + str(n) + '.npy', areas)
-            # np.save(path_ + r'\perimeter_N=' + str(n) + '.npy', perimeter)
-            # np.save(path_ + r'\asemi_N=' + str(n) + '.npy', a_semi)
-            # np.save(path_ + r'\bsemi_N=' + str(n) + '.npy', b_semi)
-            # #np.save(path_ + r'\\semiaxes_N=' + str(n) + '.npy', semiaxes)
+#             # np.savetxt(path_ + r'\anlges_N=' + str(n) + '.txt', angles)
+#             # np.save(path_ + r'\areas_N=' + str(n) + '.npy', areas)
+#             # np.save(path_ + r'\perimeter_N=' + str(n) + '.npy', perimeter)
+#             # np.save(path_ + r'\asemi_N=' + str(n) + '.npy', a_semi)
+#             # np.save(path_ + r'\bsemi_N=' + str(n) + '.npy', b_semi)
+#             # #np.save(path_ + r'\\semiaxes_N=' + str(n) + '.npy', semiaxes)
 
-            # np.save(path_ + r'\minferet_N=' + str(n) + '.npy', minferet)
-            # np.save(path_ + r'\maxferet_N=' + str(n) + '.npy', maxferet)
-            # np.save(path_ + r'\aspect_N=' + str(n) + '.npy', aspect)
-            # np.save(path_ + r'\sphericity_N=' + str(n) + '.npy', sphericity)
+#             # np.save(path_ + r'\minferet_N=' + str(n) + '.npy', minferet)
+#             # np.save(path_ + r'\maxferet_N=' + str(n) + '.npy', maxferet)
+#             # np.save(path_ + r'\aspect_N=' + str(n) + '.npy', aspect)
+#             # np.save(path_ + r'\sphericity_N=' + str(n) + '.npy', sphericity)
 
-            np.savetxt(os.path.join(path_, f'anlges_N={n}.txt'), angles)
-            np.save(os.path.join(path_, f'areas_N={n}.npy'), areas)
-            np.save(os.path.join(path_, f'perimeter_N={n}.npy'), perimeter)
-            np.save(os.path.join(path_, f'asemi_N={n}.npy'), a_semi)
-            np.save(os.path.join(path_, f'bsemi_N={n}.npy'), b_semi)
-            #np.save(os.path.join(path_, f'semiaxes_N={n}.npy'), semiaxes)
+#             np.savetxt(os.path.join(path_, f'anlges_N={n}.txt'), angles)
+#             np.save(os.path.join(path_, f'areas_N={n}.npy'), areas)
+#             np.save(os.path.join(path_, f'perimeter_N={n}.npy'), perimeter)
+#             np.save(os.path.join(path_, f'asemi_N={n}.npy'), a_semi)
+#             np.save(os.path.join(path_, f'bsemi_N={n}.npy'), b_semi)
+#             #np.save(os.path.join(path_, f'semiaxes_N={n}.npy'), semiaxes)
 
-            np.save(os.path.join(path_, f'minferet_N={n}.npy'), minferet)
-            np.save(os.path.join(path_, f'maxferet_N={n}.npy'), maxferet)
-            np.save(os.path.join(path_, f'aspect_N={n}.npy'), aspect)
-            np.save(os.path.join(path_, f'sphericity_N={n}.npy'), sphericity)
-
-
-
-    if type_figure == 'triangular prism':
-        #[0.00, 0.01, 0.02, ..., 1.40, 1.41, 1.42]#
-        #[0, 1, 2, ..., 140, 141, 142]
-
-        if params:
-            side = params['side']
-        else:
-            side = 1.
-            params = {'side': 1.}
-
-        #path_ = PATH + r'\tri-prism_side=' + str(side)
-        path_ = os.path.join("densities", f"tri-prism_side={side}")
-
-        try:
-            angles = np.loadtxt(os.path.join(path_, f'anlges_N={n}.txt'))
-            areas = np.load(os.path.join(path_, f'areas_N={n}.npy'), allow_pickle=True).item()
-            a_semi = np.load(os.path.join(path_, f'asemi_N={n}.npy'), allow_pickle=True).item()
-            b_semi = np.load(os.path.join(path_, f'bsemi_N={n}.npy'), allow_pickle=True).item()
-            perimeter = np.load(os.path.join(path_, f'perimeter_N={n}.npy'), allow_pickle=True).item()
-            minferet = np.load(os.path.join(path_, f'minferet_N={n}.npy'), allow_pickle=True).item()
-            maxferet = np.load(os.path.join(path_, f'maxferet_N={n}.npy'), allow_pickle=True).item()
-            aspect = np.load(os.path.join(path_, f'aspect_N={n}.npy'), allow_pickle=True).item()
-            sphericity = np.load(os.path.join(path_, f'sphericity_N={n}.npy'), allow_pickle=True).item()
-
-        except:
-            angles = [0]*181
-
-            areas_dict = {} #пустой словать с ключами от 0.00 до 1.42 с шагом 0.01
-            step = 0.01
-            current_key = 0.00
-            while current_key <= 3**0.5*side*side:
-                areas_dict.setdefault(round(current_key, 2), 0)
-                current_key += step
+#             np.save(os.path.join(path_, f'minferet_N={n}.npy'), minferet)
+#             np.save(os.path.join(path_, f'maxferet_N={n}.npy'), maxferet)
+#             np.save(os.path.join(path_, f'aspect_N={n}.npy'), aspect)
+#             np.save(os.path.join(path_, f'sphericity_N={n}.npy'), sphericity)
 
 
-            perim_dict = {} #пустой словать с ключами от 0.00 до 10.00 с шагом 0.01
-            step = 0.01
-            current_key = 0.00
-            while current_key <= 4*side*2:
-                perim_dict.setdefault(round(current_key, 2), 0)
-                current_key += step
 
-            #semiaxes = np.zeros((round(2*side*100), round(2*side*100)), dtype=int)
+#     if type_figure == 'triangular prism':
+#         #[0.00, 0.01, 0.02, ..., 1.40, 1.41, 1.42]#
+#         #[0, 1, 2, ..., 140, 141, 142]
 
-            a_semi_dict = {} #пустой словать с ключами от 0.00 до 3.00 с шагом 0.01
-            b_semi_dict = {}
-            step = 0.01
-            current_key = 0.00
-            while current_key <= 2*side:
-                a_semi_dict.setdefault(round(current_key, 2), 0)
-                b_semi_dict.setdefault(round(current_key, 2), 0)
-                current_key += step
+#         if params:
+#             side = params['side']
+#         else:
+#             side = 1.
+#             params = {'side': 1.}
 
-            minferet_dict = {} #пустой словать с ключами от 0.00 до max(a,b,c) с шагом 0.01
-            maxferet_dict = {}
-            aspect_dict = {}
-            sphericity_dict = {}
+#         #path_ = PATH + r'\tri-prism_side=' + str(side)
+#         path_ = os.path.join("densities", f"tri-prism_side={side}")
 
-            step = 0.01
-            current_key = 0.00
-            while current_key <= 5*side:
-                minferet_dict.setdefault(round(current_key, 2), 0)
-                maxferet_dict.setdefault(round(current_key, 2), 0)
-                current_key += step
+#         try:
+#             angles = np.loadtxt(os.path.join(path_, f'anlges_N={n}.txt'))
+#             areas = np.load(os.path.join(path_, f'areas_N={n}.npy'), allow_pickle=True).item()
+#             a_semi = np.load(os.path.join(path_, f'asemi_N={n}.npy'), allow_pickle=True).item()
+#             b_semi = np.load(os.path.join(path_, f'bsemi_N={n}.npy'), allow_pickle=True).item()
+#             perimeter = np.load(os.path.join(path_, f'perimeter_N={n}.npy'), allow_pickle=True).item()
+#             minferet = np.load(os.path.join(path_, f'minferet_N={n}.npy'), allow_pickle=True).item()
+#             maxferet = np.load(os.path.join(path_, f'maxferet_N={n}.npy'), allow_pickle=True).item()
+#             aspect = np.load(os.path.join(path_, f'aspect_N={n}.npy'), allow_pickle=True).item()
+#             sphericity = np.load(os.path.join(path_, f'sphericity_N={n}.npy'), allow_pickle=True).item()
+
+#         except:
+#             angles = [0]*181
+
+#             areas_dict = {} #пустой словать с ключами от 0.00 до 1.42 с шагом 0.01
+#             step = 0.01
+#             current_key = 0.00
+#             while current_key <= 3**0.5*side*side:
+#                 areas_dict.setdefault(round(current_key, 2), 0)
+#                 current_key += step
+
+
+#             perim_dict = {} #пустой словать с ключами от 0.00 до 10.00 с шагом 0.01
+#             step = 0.01
+#             current_key = 0.00
+#             while current_key <= 4*side*2:
+#                 perim_dict.setdefault(round(current_key, 2), 0)
+#                 current_key += step
+
+#             #semiaxes = np.zeros((round(2*side*100), round(2*side*100)), dtype=int)
+
+#             a_semi_dict = {} #пустой словать с ключами от 0.00 до 3.00 с шагом 0.01
+#             b_semi_dict = {}
+#             step = 0.01
+#             current_key = 0.00
+#             while current_key <= 2*side:
+#                 a_semi_dict.setdefault(round(current_key, 2), 0)
+#                 b_semi_dict.setdefault(round(current_key, 2), 0)
+#                 current_key += step
+
+#             minferet_dict = {} #пустой словать с ключами от 0.00 до max(a,b,c) с шагом 0.01
+#             maxferet_dict = {}
+#             aspect_dict = {}
+#             sphericity_dict = {}
+
+#             step = 0.01
+#             current_key = 0.00
+#             while current_key <= 5*side:
+#                 minferet_dict.setdefault(round(current_key, 2), 0)
+#                 maxferet_dict.setdefault(round(current_key, 2), 0)
+#                 current_key += step
                 
-            current_key = 0.00    
-            while current_key <= 1.:
-                aspect_dict.setdefault(round(current_key, 2), 0)
-                sphericity_dict.setdefault(round(current_key, 2), 0)
-                current_key += step
+#             current_key = 0.00    
+#             while current_key <= 1.:
+#                 aspect_dict.setdefault(round(current_key, 2), 0)
+#                 sphericity_dict.setdefault(round(current_key, 2), 0)
+#                 current_key += step
 
-            num_errors = 0   
+#             num_errors = 0   
 
 
-            for i in range(n):
-                sec_polygon = secant_polygon(polyhedron, way, params=params)
-                if len(sec_polygon) > 2:
-                    polygonOxy = rotate_points_to_Oxy(sec_polygon)[0]
-                    #check convexity
-                    if is_convex_polygon_2D(polygonOxy):
-                        ang_sec = get_angles(sec_polygon)
-                        area = area_of_polygon_3d(sec_polygon)
-                        perim = perimeter_3D(sec_polygon)
-                        a_semi, b_semi = semiaxes_from_polygon_3D(sec_polygon)
+#             for i in range(n):
+#                 sec_polygon = secant_polygon(polyhedron, way, params=params)
+#                 if len(sec_polygon) > 2:
+#                     polygonOxy = rotate_points_to_Oxy(sec_polygon)[0]
+#                     #check convexity
+#                     if is_convex_polygon_2D(polygonOxy):
+#                         ang_sec = get_angles(sec_polygon)
+#                         area = area_of_polygon_3d(sec_polygon)
+#                         perim = perimeter_3D(sec_polygon)
+#                         a_semi, b_semi = semiaxes_from_polygon_3D(sec_polygon)
                         
-                        min_feret, max_feret = minmax_feret(polygonOxy)
-                        aspect_ratio = min_feret/max_feret
-                        sphericity = 2*(np.pi*area)**0.5/perim
-                        if aspect_ratio <= 1.:
-                            for ang in ang_sec:
-                                angles[ang] += 1
-                            areas_dict[round(area, 2)] += 1
-                            perim_dict[round(perim, 2)] += 1
-                            a_semi_dict[round(a_semi, 2)] += 1
-                            b_semi_dict[round(b_semi, 2)] += 1
+#                         min_feret, max_feret = minmax_feret(polygonOxy)
+#                         aspect_ratio = min_feret/max_feret
+#                         sphericity = 2*(np.pi*area)**0.5/perim
+#                         if aspect_ratio <= 1.:
+#                             for ang in ang_sec:
+#                                 angles[ang] += 1
+#                             areas_dict[round(area, 2)] += 1
+#                             perim_dict[round(perim, 2)] += 1
+#                             a_semi_dict[round(a_semi, 2)] += 1
+#                             b_semi_dict[round(b_semi, 2)] += 1
                             
-                            minferet_dict[round(min_feret, 2)] += 1
-                            maxferet_dict[round(max_feret, 2)] += 1
-                            aspect_dict[round(aspect_ratio, 2)] += 1
-                            sphericity_dict[round(sphericity, 2)] += 1
-                        else:
-                            num_errors += 1
-                    else:
-                        num_errors += 1
-                else:
-                    num_errors += 1
+#                             minferet_dict[round(min_feret, 2)] += 1
+#                             maxferet_dict[round(max_feret, 2)] += 1
+#                             aspect_dict[round(aspect_ratio, 2)] += 1
+#                             sphericity_dict[round(sphericity, 2)] += 1
+#                         else:
+#                             num_errors += 1
+#                     else:
+#                         num_errors += 1
+#                 else:
+#                     num_errors += 1
 
-            print('precision is ', 1-num_errors/n)
+#             print('precision is ', 1-num_errors/n)
 
-            angles = np.array(list(np.array(angles)/np.sum(angles)))
-            areas = norm_dict(areas_dict, step=0.01)
-            perimeter = norm_dict(perim_dict, step=0.01)
-            a_semi = norm_dict(a_semi_dict, step=0.01)
-            b_semi = norm_dict(b_semi_dict, step=0.01)
+#             angles = np.array(list(np.array(angles)/np.sum(angles)))
+#             areas = norm_dict(areas_dict, step=0.01)
+#             perimeter = norm_dict(perim_dict, step=0.01)
+#             a_semi = norm_dict(a_semi_dict, step=0.01)
+#             b_semi = norm_dict(b_semi_dict, step=0.01)
 
-            minferet = norm_dict(minferet_dict, step=0.01)
-            maxferet = norm_dict(maxferet_dict, step=0.01)
-            aspect = norm_dict(aspect_dict, step=0.01)
-            sphericity = norm_dict(sphericity_dict, step=0.01)
+#             minferet = norm_dict(minferet_dict, step=0.01)
+#             maxferet = norm_dict(maxferet_dict, step=0.01)
+#             aspect = norm_dict(aspect_dict, step=0.01)
+#             sphericity = norm_dict(sphericity_dict, step=0.01)
 
-            os.makedirs(path_, exist_ok=True)
+#             os.makedirs(path_, exist_ok=True)
 
-            np.savetxt(os.path.join(path_, f'anlges_N={n}.txt'), angles)
-            np.save(os.path.join(path_, f'areas_N={n}.npy'), areas)
-            np.save(os.path.join(path_, f'perimeter_N={n}.npy'), perimeter)
-            np.save(os.path.join(path_, f'asemi_N={n}.npy'), a_semi)
-            np.save(os.path.join(path_, f'bsemi_N={n}.npy'), b_semi)
-            #np.save(os.path.join(path_, f'semiaxes_N={n}.npy'), semiaxes)
+#             np.savetxt(os.path.join(path_, f'anlges_N={n}.txt'), angles)
+#             np.save(os.path.join(path_, f'areas_N={n}.npy'), areas)
+#             np.save(os.path.join(path_, f'perimeter_N={n}.npy'), perimeter)
+#             np.save(os.path.join(path_, f'asemi_N={n}.npy'), a_semi)
+#             np.save(os.path.join(path_, f'bsemi_N={n}.npy'), b_semi)
+#             #np.save(os.path.join(path_, f'semiaxes_N={n}.npy'), semiaxes)
 
-            np.save(os.path.join(path_, f'minferet_N={n}.npy'), minferet)
-            np.save(os.path.join(path_, f'maxferet_N={n}.npy'), maxferet)
-            np.save(os.path.join(path_, f'aspect_N={n}.npy'), aspect)
-            np.save(os.path.join(path_, f'sphericity_N={n}.npy'), sphericity)
-
-
+#             np.save(os.path.join(path_, f'minferet_N={n}.npy'), minferet)
+#             np.save(os.path.join(path_, f'maxferet_N={n}.npy'), maxferet)
+#             np.save(os.path.join(path_, f'aspect_N={n}.npy'), aspect)
+#             np.save(os.path.join(path_, f'sphericity_N={n}.npy'), sphericity)
 
 
 
-    if type_figure == 'hex prism':
-
-        r = params['r']
-        k = params['k']
-
-        path_ = os.path.join("densities", f"hex-prism_r={r}k={k}")
-
-        try:
-            angles = np.loadtxt(os.path.join(path_, f'anlges_N={n}.txt'))
-            areas = np.load(os.path.join(path_, f'areas_N={n}.npy'), allow_pickle=True).item()
-            a_semi = np.load(os.path.join(path_, f'asemi_N={n}.npy'), allow_pickle=True).item()
-            b_semi = np.load(os.path.join(path_, f'bsemi_N={n}.npy'), allow_pickle=True).item()
-            perimeter = np.load(os.path.join(path_, f'perimeter_N={n}.npy'), allow_pickle=True).item()
-            minferet = np.load(os.path.join(path_, f'minferet_N={n}.npy'), allow_pickle=True).item()
-            maxferet = np.load(os.path.join(path_, f'maxferet_N={n}.npy'), allow_pickle=True).item()
-            aspect = np.load(os.path.join(path_, f'aspect_N={n}.npy'), allow_pickle=True).item()
-            sphericity = np.load(os.path.join(path_, f'sphericity_N={n}.npy'), allow_pickle=True).item()
-
-        except:
-            angles = [0]*181
-
-            areas_dict = {} #пустой словать с ключами от 0.00 до 1.42 с шагом 0.01
-            step = 0.01
-            current_key = 0.00
-            while current_key <= 10.:
-                areas_dict.setdefault(round(current_key, 2), 0)
-                current_key += step
 
 
-            perim_dict = {} #пустой словать с ключами от 0.00 до 10.00 с шагом 0.01
-            step = 0.01
-            current_key = 0.00
-            while current_key <= 10.:
-                perim_dict.setdefault(round(current_key, 2), 0)
-                current_key += step
+#     if type_figure == 'hex prism':
 
-            #semiaxes = np.zeros((round(k*2*60)+20, round(k*2*60)+20), dtype=int)
+#         r = params['r']
+#         k = params['k']
 
-            a_semi_dict = {} #пустой словать с ключами от 0.00 до 3.00 с шагом 0.01
-            b_semi_dict = {}
-            step = 0.01
-            current_key = 0.00
-            while current_key <= round(k*2*60)+20:
-                a_semi_dict.setdefault(round(current_key, 2), 0)
-                b_semi_dict.setdefault(round(current_key, 2), 0)
-                current_key += step
+#         path_ = os.path.join("densities", f"hex-prism_r={r}k={k}")
 
-            minferet_dict = {} #пустой словать с ключами от 0.00 до max(a,b,c) с шагом 0.01
-            maxferet_dict = {}
-            aspect_dict = {}
-            sphericity_dict = {}
+#         try:
+#             angles = np.loadtxt(os.path.join(path_, f'anlges_N={n}.txt'))
+#             areas = np.load(os.path.join(path_, f'areas_N={n}.npy'), allow_pickle=True).item()
+#             a_semi = np.load(os.path.join(path_, f'asemi_N={n}.npy'), allow_pickle=True).item()
+#             b_semi = np.load(os.path.join(path_, f'bsemi_N={n}.npy'), allow_pickle=True).item()
+#             perimeter = np.load(os.path.join(path_, f'perimeter_N={n}.npy'), allow_pickle=True).item()
+#             minferet = np.load(os.path.join(path_, f'minferet_N={n}.npy'), allow_pickle=True).item()
+#             maxferet = np.load(os.path.join(path_, f'maxferet_N={n}.npy'), allow_pickle=True).item()
+#             aspect = np.load(os.path.join(path_, f'aspect_N={n}.npy'), allow_pickle=True).item()
+#             sphericity = np.load(os.path.join(path_, f'sphericity_N={n}.npy'), allow_pickle=True).item()
 
-            step = 0.01
-            current_key = 0.00
-            while current_key <= round(k*2*60) + 20.:
-                minferet_dict.setdefault(round(current_key, 2), 0)
-                maxferet_dict.setdefault(round(current_key, 2), 0)
-                current_key += step
+#         except:
+#             angles = [0]*181
+
+#             areas_dict = {} #пустой словать с ключами от 0.00 до 1.42 с шагом 0.01
+#             step = 0.01
+#             current_key = 0.00
+#             while current_key <= 10.:
+#                 areas_dict.setdefault(round(current_key, 2), 0)
+#                 current_key += step
+
+
+#             perim_dict = {} #пустой словать с ключами от 0.00 до 10.00 с шагом 0.01
+#             step = 0.01
+#             current_key = 0.00
+#             while current_key <= 10.:
+#                 perim_dict.setdefault(round(current_key, 2), 0)
+#                 current_key += step
+
+#             #semiaxes = np.zeros((round(k*2*60)+20, round(k*2*60)+20), dtype=int)
+
+#             a_semi_dict = {} #пустой словать с ключами от 0.00 до 3.00 с шагом 0.01
+#             b_semi_dict = {}
+#             step = 0.01
+#             current_key = 0.00
+#             while current_key <= round(k*2*60)+20:
+#                 a_semi_dict.setdefault(round(current_key, 2), 0)
+#                 b_semi_dict.setdefault(round(current_key, 2), 0)
+#                 current_key += step
+
+#             minferet_dict = {} #пустой словать с ключами от 0.00 до max(a,b,c) с шагом 0.01
+#             maxferet_dict = {}
+#             aspect_dict = {}
+#             sphericity_dict = {}
+
+#             step = 0.01
+#             current_key = 0.00
+#             while current_key <= round(k*2*60) + 20.:
+#                 minferet_dict.setdefault(round(current_key, 2), 0)
+#                 maxferet_dict.setdefault(round(current_key, 2), 0)
+#                 current_key += step
                 
-            current_key = 0.00    
-            while current_key <= 1.:
-                aspect_dict.setdefault(round(current_key, 2), 0)
-                sphericity_dict.setdefault(round(current_key, 2), 0)
-                current_key += step
+#             current_key = 0.00    
+#             while current_key <= 1.:
+#                 aspect_dict.setdefault(round(current_key, 2), 0)
+#                 sphericity_dict.setdefault(round(current_key, 2), 0)
+#                 current_key += step
 
-            num_errors = 0   
+#             num_errors = 0   
 
 
-            for i in range(n):
-                sec_polygon = secant_polygon(polyhedron, way, params=params)
-                if len(sec_polygon) > 2:
-                    polygonOxy = rotate_points_to_Oxy(sec_polygon)[0]
-                    #check convexity
-                    if is_convex_polygon_2D(polygonOxy):
-                        ang_sec = get_angles(sec_polygon)
-                        area = area_of_polygon_3d(sec_polygon)
-                        perim = perimeter_3D(sec_polygon)
-                        a_semi, b_semi = semiaxes_from_polygon_3D(sec_polygon)
+#             for i in range(n):
+#                 sec_polygon = secant_polygon(polyhedron, way, params=params)
+#                 if len(sec_polygon) > 2:
+#                     polygonOxy = rotate_points_to_Oxy(sec_polygon)[0]
+#                     #check convexity
+#                     if is_convex_polygon_2D(polygonOxy):
+#                         ang_sec = get_angles(sec_polygon)
+#                         area = area_of_polygon_3d(sec_polygon)
+#                         perim = perimeter_3D(sec_polygon)
+#                         a_semi, b_semi = semiaxes_from_polygon_3D(sec_polygon)
                         
-                        min_feret, max_feret = minmax_feret(polygonOxy)
-                        aspect_ratio = min_feret/max_feret
-                        sphericity = 2*(np.pi*area)**0.5/perim
-                        if aspect_ratio <= 1.:
-                            for ang in ang_sec:
-                                angles[ang] += 1
-                            areas_dict[round(area, 2)] += 1
-                            perim_dict[round(perim, 2)] += 1
-                            a_semi_dict[round(a_semi, 2)] += 1
-                            b_semi_dict[round(b_semi, 2)] += 1
+#                         min_feret, max_feret = minmax_feret(polygonOxy)
+#                         aspect_ratio = min_feret/max_feret
+#                         sphericity = 2*(np.pi*area)**0.5/perim
+#                         if aspect_ratio <= 1.:
+#                             for ang in ang_sec:
+#                                 angles[ang] += 1
+#                             areas_dict[round(area, 2)] += 1
+#                             perim_dict[round(perim, 2)] += 1
+#                             a_semi_dict[round(a_semi, 2)] += 1
+#                             b_semi_dict[round(b_semi, 2)] += 1
                             
-                            minferet_dict[round(min_feret, 2)] += 1
-                            maxferet_dict[round(max_feret, 2)] += 1
-                            aspect_dict[round(aspect_ratio, 2)] += 1
-                            sphericity_dict[round(sphericity, 2)] += 1
-                        else:
-                            num_errors += 1
-                    else:
-                        num_errors += 1
-                else:
-                    num_errors += 1
+#                             minferet_dict[round(min_feret, 2)] += 1
+#                             maxferet_dict[round(max_feret, 2)] += 1
+#                             aspect_dict[round(aspect_ratio, 2)] += 1
+#                             sphericity_dict[round(sphericity, 2)] += 1
+#                         else:
+#                             num_errors += 1
+#                     else:
+#                         num_errors += 1
+#                 else:
+#                     num_errors += 1
 
-            print('precision is ', 1-num_errors/n)
+#             print('precision is ', 1-num_errors/n)
 
-            angles = np.array(list(np.array(angles)/np.sum(angles)))
-            areas = norm_dict(areas_dict, step=0.01)
-            perimeter = norm_dict(perim_dict, step=0.01)
-            a_semi = norm_dict(a_semi_dict, step=0.01)
-            b_semi = norm_dict(b_semi_dict, step=0.01)
+#             angles = np.array(list(np.array(angles)/np.sum(angles)))
+#             areas = norm_dict(areas_dict, step=0.01)
+#             perimeter = norm_dict(perim_dict, step=0.01)
+#             a_semi = norm_dict(a_semi_dict, step=0.01)
+#             b_semi = norm_dict(b_semi_dict, step=0.01)
 
-            minferet = norm_dict(minferet_dict, step=0.01)
-            maxferet = norm_dict(maxferet_dict, step=0.01)
-            aspect = norm_dict(aspect_dict, step=0.01)
-            sphericity = norm_dict(sphericity_dict, step=0.01)
+#             minferet = norm_dict(minferet_dict, step=0.01)
+#             maxferet = norm_dict(maxferet_dict, step=0.01)
+#             aspect = norm_dict(aspect_dict, step=0.01)
+#             sphericity = norm_dict(sphericity_dict, step=0.01)
 
-            os.makedirs(path_, exist_ok=True)
+#             os.makedirs(path_, exist_ok=True)
 
-            np.savetxt(os.path.join(path_, f'anlges_N={n}.txt'), angles)
-            np.save(os.path.join(path_, f'areas_N={n}.npy'), areas)
-            np.save(os.path.join(path_, f'perimeter_N={n}.npy'), perimeter)
-            np.save(os.path.join(path_, f'asemi_N={n}.npy'), a_semi)
-            np.save(os.path.join(path_, f'bsemi_N={n}.npy'), b_semi)
-            #np.save(os.path.join(path_, f'semiaxes_N={n}.npy'), semiaxes)
+#             np.savetxt(os.path.join(path_, f'anlges_N={n}.txt'), angles)
+#             np.save(os.path.join(path_, f'areas_N={n}.npy'), areas)
+#             np.save(os.path.join(path_, f'perimeter_N={n}.npy'), perimeter)
+#             np.save(os.path.join(path_, f'asemi_N={n}.npy'), a_semi)
+#             np.save(os.path.join(path_, f'bsemi_N={n}.npy'), b_semi)
+#             #np.save(os.path.join(path_, f'semiaxes_N={n}.npy'), semiaxes)
 
-            np.save(os.path.join(path_, f'minferet_N={n}.npy'), minferet)
-            np.save(os.path.join(path_, f'maxferet_N={n}.npy'), maxferet)
-            np.save(os.path.join(path_, f'aspect_N={n}.npy'), aspect)
-            np.save(os.path.join(path_, f'sphericity_N={n}.npy'), sphericity)
+#             np.save(os.path.join(path_, f'minferet_N={n}.npy'), minferet)
+#             np.save(os.path.join(path_, f'maxferet_N={n}.npy'), maxferet)
+#             np.save(os.path.join(path_, f'aspect_N={n}.npy'), aspect)
+#             np.save(os.path.join(path_, f'sphericity_N={n}.npy'), sphericity)
 
 
-    return angles, areas, perimeter, a_semi, b_semi, minferet, maxferet, aspect, sphericity
+#     return angles, areas, perimeter, a_semi, b_semi, minferet, maxferet, aspect, sphericity
 
 
 def make_distributions(polyhedron, way, PATH, type_figure='parallelepiped', n=10000, params=None):
@@ -2589,11 +2687,17 @@ def make_distributions(polyhedron, way, PATH, type_figure='parallelepiped', n=10
         return angles, areas, perimeter, a_semi, b_semi, minferet, maxferet, aspect, sphericity
 
 
-
-
 def generate_point_in_triangle(A1, A2, A3):
     '''
-    A1, A2, A3: Point or array - 2D/3D coordinates of triangle, where we generate a Point uniformly
+    Generates a random point uniformly within the triangle defined by the vertices A1, A2, and A3.
+    
+    Parameters:
+    A1, A2, A3: array-like
+        2D or 3D coordinates of the triangle vertices.
+
+    Returns:
+    Point
+        A point generated inside the triangle with coordinates.
     '''
     z = np.random.uniform(0., 1., 2)
     l1 = z[0]**0.5
@@ -2609,12 +2713,17 @@ def generate_point_in_triangle(A1, A2, A3):
 
 def is_point_in_polygon(P, polygon):
     '''
-    check if point P is in polygon
+    Check if point P is inside the polygon.
     
-    P: Point or np.darray
-    polygon: np.darray of coordinates of polygon vertices
+    Parameters:
+    P: array-like or np.ndarray
+        Coordinates of the point to check.
+    polygon: np.ndarray
+        Coordinates of the polygon vertices.
     
-    return True if point is in polygon, False otherwise
+    Returns:
+    bool
+        True if point is inside the polygon, False otherwise.
     '''
     S = area_of_polygon_3d(polygon) #area of polygon
     S_ = 0 #area of triangles PAB, where A, B - neighbour points of polygon
@@ -2628,31 +2737,17 @@ def is_point_in_polygon(P, polygon):
     return abs(S-S_) < 0.0000001
 
 
-def from_list_points_to_array(points):
-    '''
-    transform list of Points to array of 3D coordinates
-    '''
-    vecs = np.zeros((len(points), 3))
-    for i in range(len(points)):
-        vecs[i] = points[i][0], points[i][1], points[i][2]
-    return vecs
-
-
-def from_list_array_to_points(points_arr):
-    '''
-    transform array of 3D coordinates to list of Points 
-    '''
-    points = []
-    for i in range(len(points_arr)):
-        points.append(Point(points_arr[i][0], points_arr[i][1], points_arr[i][2]))
-    return points
-    
-
 def proportion_S(triangles):
     '''
-    get array of proportion of triangles over the triangle
+    Calculate the proportion of each triangle's area over the sum of all triangle areas.
     
-    triangles: list of triangles
+    Parameters:
+    triangles: np.ndarray
+        An array of triangles where each triangle is represented by its vertices.
+    
+    Returns:
+    np.ndarray
+        An array of proportions representing the area of each triangle over the sum of all triangle areas.
     '''
     n_triangles = triangles.shape[0]
     proportions = np.zeros(n_triangles)
@@ -2665,8 +2760,15 @@ def proportion_S(triangles):
 
 def generations_point_in_polygon(vectors):
     '''
-    generate point in polygon
+    Generate a random point inside a triangle defined by points A1, A2, and A3.
     
+    Parameters:
+    A1, A2, A3: np.ndarray or list
+        2D or 3D coordinates of the triangle vertices.
+    
+    Returns:
+    np.ndarray
+        A random point inside the triangle.
     '''
     
     triangles = from_polygon_to_list_of_triangles(vectors)
@@ -2687,74 +2789,98 @@ def generations_point_in_polygon(vectors):
 
 def test_generate_linear_intersept(cube=Cube()):
     '''
-    возвращает список точек-проекций на плоскость и ее выпуклую оболочку
+    Generates a random plane and projects the vertices of the cube onto this plane.
+    
+    Parameters:
+    cube : Cube (default is a unit cube)
+        An instance of the Cube class representing the cube to be projected.
+        
+    Returns:
+    tuple : (projected_points, hull)
+        projected_points : np.ndarray
+            Array of points projected onto the plane.
+        hull : scipy.spatial.ConvexHull
+            Convex hull of the projected points.
     '''
-    #генерируем вектор нормали
+    # Generate a random normal vector
     fi = 2*np.pi*uniform(0, 1)
     teta = np.arccos(2*uniform(0, 1) - 1)
     n = Vector(np.sin(teta)*np.cos(fi), 
                np.sin(teta)*np.sin(fi),
                np.cos(teta))
     
-    #берем плоскость с таким вектором нормали и проходящую через 0.
+    # Define a plane with the normal vector passing through the origin
     plane = Plane(Point(0., 0., 0.), n)
-    #в этой плоскости надо найти многоугольник-проекцию всех точек куба
+    
+    # Project the cube vertices onto the plane
     polygon_points_not_ordered = []
     for M in cube.iterable_points:
         line_MP = Line(M, n)
-        #P - projection of M on plane
+        # P - projection of M on the plane
         P = intersection(line_MP, plane)
         polygon_points_not_ordered.append([P[0], P[1], P[2]])
     
     polygon_points_not_ordered = np.array(polygon_points_not_ordered)
     hull = ConvexHull(polygon_points_not_ordered[:, :2])
+    
     return polygon_points_not_ordered, hull
 
 
 
-def generate_linear_intersept(polyhedron=Cube()):
+def generate_linear_intersept(polyhedron):
     '''
-    generation of length of random linear intersept in polyhedron
+    Generates the points and a length of a random linear intercept in a polyhedron.
+    
+    Parameters:
+    polyhedron : Polyhedron
+        An instance of a polyhedron class representing the shape in which to generate the intercept.
+        
+    Returns:
+    tuple : (endpoints, length)
+        endpoints : tuple of Points
+            The two endpoints of the linear intercept.
+        length : float
+            The length of the linear intercept.
     '''
-    #генерируем вектор нормали
-    fi = 2*np.pi*uniform(0, 1)
-    teta = np.arccos(2*uniform(0, 1) - 1)
-    n = Vector(np.sin(teta)*np.cos(fi), 
-               np.sin(teta)*np.sin(fi),
+    # Generate a random normal vector
+    fi = 2 * np.pi * uniform(0, 1)
+    teta = np.arccos(2 * uniform(0, 1) - 1)
+    n = Vector(np.sin(teta) * np.cos(fi), 
+               np.sin(teta) * np.sin(fi),
                np.cos(teta))
     
-    #берем плоскость с таким вектором нормали и проходящую через 0.
+    # Define a plane with the normal vector passing through the origin
     plane = Plane(Point(0., 0., 0.), n)
-    #в этой плоскости надо найти многоугольник-проекцию всех точек куба
+    
+    # Project the polyhedron vertices onto the plane
     polygon_points_not_ordered = []
-    for M in polyhedron.iterable_points: #проходимся по точкам куба
-        line_MP = Line(M, n) #линия-нормаль - через точку куба, которую проецируем
-        P = intersection(line_MP, plane) #P - projection of M on plane
-        polygon_points_not_ordered.append([P[0], P[1], P[2]]) #добавим точку P в список точек-проекций
+    for M in polyhedron.iterable_points:
+        line_MP = Line(M, n)
+        # P - projection of M on the plane
+        P = intersection(line_MP, plane)
+        polygon_points_not_ordered.append([P[0], P[1], P[2]])
     
     polygon_points_not_ordered = np.array(polygon_points_not_ordered) 
-    hull = ConvexHull(polygon_points_not_ordered[:, :2]) #берем выпуклую оболочку у проекции многоугольника на Oxy чтобы найти
-                                                         #вершины, которые являются тем самым многоугольником-проекцией
-    polygon = polygon_points_not_ordered[hull.vertices]  #оставляем только нужные вершины и в нужном порядке
+    hull = ConvexHull(polygon_points_not_ordered[:, :2]) # Compute convex hull of the projection
+    polygon = polygon_points_not_ordered[hull.vertices]  # Extract vertices of the convex hull
     
-    Pns = generations_point_in_polygon(polygon) #генерируем точку в этом многоугольнике-проекции
-    linear_intersept_line = Line(Pns, n) # прямая, содержащая этот перехват, проходит через Pns и сонаправлена n
+    Pns = generations_point_in_polygon(polygon) # Generate a point in the projected polygon
+    linear_intersept_line = Line(Pns, n) # Line through Pns in the direction of n
     
-    two_points = [] #будем надеяться что будет две точки у концов отрезка
-    #будем среди пересечений линии linear_intersept_line искать те, которые пересекают именно грани
+    two_points = [] # List to store intersection points with polyhedron facets
     
     for i, pl in enumerate(polyhedron.iterable_planes):
-        #check the intersection of generated line and a polyhedron's facets
+        # Check the intersection of generated line and the polyhedron's facets
         X = intersection(linear_intersept_line, pl)
-        #need to check is the X inside the facet
+        # Check if X is inside the facet
         if is_point_in_polygon(X, from_list_points_to_array(polyhedron.iterable_facets[i])):
             two_points.append(X)
     if len(two_points) != 2:
-        print('smth went wrong, not 2 points')
+        print('Something went wrong, not 2 points')
         return None
     P1 = two_points[0]
     P2 = two_points[1]
-    lin = P1-P2
+    lin = P1 - P2
     
     return (P1, P2), (lin[0]**2 + lin[1]**2 + lin[2]**2)**0.5
 

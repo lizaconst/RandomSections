@@ -1,5 +1,5 @@
 # RandomSections
-A library for numerical estimation of the density distributions of geometric characteristics in random sections of convex polyhedra
+Library for numerical estimation of the density distributions of geometric characteristics in random sections of convex polyhedra
 
 ## Features
 - numerically solve problems of analytic geometry, including determining the relative position of 3D objects;

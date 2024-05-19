@@ -1,12 +1,10 @@
-from random import random, uniform, seed
-from matplotlib import pyplot as plt
+from random import uniform
 import numpy as np
 import math
 import os
-import pickle
 from scipy.spatial import ConvexHull
 
-from .geom import distance, intersection, parallel, angle, orthogonal, solve
+from .geom import distance, intersection
 from .geom import Point, Vector, Line, Plane
 
 
@@ -510,106 +508,6 @@ def make_random_plane_into_wcco(r, k, m=1):
     point = Point(alpha*n[0]+center[0], alpha*n[1]+center[1], alpha*n[2]+center[2])
     return Plane(point, n)
     
-
-#Angles distributions
-# def generate_random_plane_angles(polyhedron, way):
-#     '''
-#     генерирует плоскость внутри многогранника polyhedron способом way
-#     и возвращает список углов секущего многогранника
-#     рекомендуется выбирать way, полностью замощающий polyhedron
-#     в polyhedron должен быть реализован метод intersection_with_plane
-#     '''
-#     plane = way()
-#     # отбираем только те плоскости у которых непустое пересечение с многогранником
-#     points_intersection = polyhedron.intersection_with_plane(plane)
-#     if len(points_intersection) != 0:
-#         return get_angles(points_intersection)
-#     else:
-#         return []
-
-
-# def generate_n_planes(polyhedron, way, n=10000):
-#     '''
-#     генерирует n плоскостей способом way и возвращает плотность распределения
-#     углов секущих многогранников
-#     '''
-#     angles = [0]*181
-    
-#     for i in range(n):
-#         angs = generate_random_plane_angles(polyhedron=polyhedron, way=way)
-#         if len(angs) != 0:
-#             for ang in angs:
-#                 angles[ang] += 1
-    
-#     return list(np.array(angles)/np.sum(angles))
-
-
-# def generate_random_plane_angles_wcco(polyhedron, way, r, k):
-#     '''
-#     генерирует плоскость внутри многогранника polyhedron способом way
-#     и возвращает список углов секущего многогранника
-#     рекомендуется выбирать way, полностью замощающий polyhedron
-#     в polyhedron должен быть реализован метод intersection_with_plane
-#     '''
-#     plane = way(r, k)
-#     # отбираем только те плоскости у которых непустое пересечение с многогранником
-#     points_intersection = polyhedron.intersection_with_plane(plane)
-#     if len(points_intersection) != 0:
-#         return get_angles(points_intersection)
-#     else:
-#         return []
-
-
-# def generate_n_planes_wcco(polyhedron, way, r, k, n=10000):
-#     '''
-#     генерирует n плоскостей способом way и возвращает плотность распределения
-#     углов секущих многогранников
-#     '''
-#     angles = [0]*181
-    
-#     for i in range(n):
-#         angs = generate_random_plane_angles_wcco(polyhedron=polyhedron, way=way, r=r, k=k)
-#         if len(angs) != 0:
-#             for ang in angs:
-#                 angles[ang] += 1
-    
-#     return list(np.array(angles)/np.sum(angles))
-
-
-# def generate_random_plane_angles_type_wcco(polyhedron, way, r, k):
-#     '''
-#     генерирует плоскость внутри многогранника polyhedron способом way
-#     и возвращает список углов секущего многогранника и тип пересечения 
-#     0 - не пересекает базальные плоскости
-#     1 - одно пересечение
-#     2 - два пересечения
-#     рекомендуется выбирать way, полностью замощающий polyhedron
-#     в polyhedron должен быть реализован метод intersection_with_basal
-#     '''
-#     plane = way(r, k)
-#     # отбираем только те плоскости у которых непустое пересечение с многогранником
-#     points_intersection, tpe = polyhedron.intersection_with_basal(plane)
-#     if len(points_intersection) != 0:
-#         return get_angles(points_intersection), tpe
-#     else:
-#         return [], tpe
-    
-    
-# def generate_n_planes_type_wcco(polyhedron, way, r, k, n=10000):
-#     '''
-#     генерирует n плоскостей способом way и возвращает плотность распределения
-#     углов секущих многогранников
-#     '''
-#     angles = np.zeros((3, 181)) #= [0]*181
-    
-#     for i in range(n):
-#         angs, tpe = generate_random_plane_angles_type_wcco(polyhedron=polyhedron, way=way, r=r, k=k)
-#         if len(angs) != 0:
-#             for ang in angs:
-#                 angles[tpe][ang] += 1
-    
-#     return list(np.array(angles)/np.sum(angles))
-
 
 class Cube():
     """

@@ -1,4 +1,4 @@
-# RandomSections
+# randsec
 Library for numerical estimation of the density distributions of geometric characteristics in random sections of convex polyhedra
 
 ## Features
